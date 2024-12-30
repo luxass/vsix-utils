@@ -119,8 +119,11 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
   // remove the existing package if it exists
   if (existsSync(packagePath) && force) {
-    await unlink(packagePath);
-    console.error("test");
+    await unlink(packagePath).then(() => {
+      console.error("unlink");
+    }).catch((err) => {
+      console.error("unlink error", err);
+    });
   }
 
   // TODO: remove this when https://github.com/DefinitelyTyped/DefinitelyTyped/pull/71523 has been merged
@@ -154,7 +157,6 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
   return new Promise((resolve, reject) => {
     zip.once("error", (err) => {
-      console.error("error", err);
       reject(err);
     });
 
@@ -163,7 +165,6 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     });
 
     zipStream.once("error", (err) => {
-      console.error("error 2", err);
       reject(err);
     });
   });
