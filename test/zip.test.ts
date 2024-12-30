@@ -2,8 +2,8 @@ import { existsSync } from "node:fs";
 import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { testdir } from "vitest-testdirs";
-import { writeVsix } from "../src/zip";
+import { fromFileSystem, testdir } from "vitest-testdirs";
+import { readVsix, writeVsix } from "../src/zip";
 
 describe("write vsix", () => {
   it("should throw if package path exists and force is false", async () => {
@@ -147,8 +147,7 @@ describe("write vsix", () => {
         },
       ],
     })).rejects.toThrow(
-      `ENOENT: no such file or directory, stat '${
-        join(path, "non-existent.txt")
+      `ENOENT: no such file or directory, stat '${join(path, "non-existent.txt")
       }'`,
     );
   });
@@ -204,5 +203,36 @@ describe("write vsix", () => {
 
     expect(content1).toEqual(content2);
     expect(content1).not.toEqual(content3);
+  });
+});
+
+describe("read vsix", () => {
+  it("should read vsix package", async () => {
+    const path = await testdir(await fromFileSystem("./test/fixtures/zip", {
+      getEncodingForFile: (path) => {
+        return path.endsWith(".vsix") ? null : "utf-8";
+      },
+    }));
+
+    const { files, manifest } = await readVsix({
+      packagePath: join(path, "luxass.tsup-problem-matchers-1.0.7.vsix"),
+    });
+
+    expect(files).toHaveLength(7);
+    expect(manifest.packagemanifest).toBeDefined();
+  });
+
+  it("should throw if extension.vsixmanifest is not found", async () => {
+    const path = await testdir(await fromFileSystem("./test/fixtures/zip", {
+      getEncodingForFile: (path) => {
+        return path.endsWith(".vsix") ? null : "utf-8";
+      },
+    }));
+
+    await expect(readVsix({
+      packagePath: join(path, "without-manifest.vsix"),
+    })).rejects.toThrow(
+      `extension.vsixmanifest file is missing`,
+    );
   });
 });
