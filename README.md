@@ -49,9 +49,9 @@ Published under [MIT License](./LICENSE).
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/vitest-testdirs?style=flat&colorA=18181B&colorB=4169E1
-[npm-version-href]: https://npmjs.com/package/vitest-testdirs
-[npm-downloads-src]: https://img.shields.io/npm/dm/vitest-testdirs?style=flat&colorA=18181B&colorB=4169E1
-[npm-downloads-href]: https://npmjs.com/package/vitest-testdirs
-[jsr-version-src]: https://jsr.io/badges/@luxass/vitest-testdirs?style=flat&labelColor=18181B&logoColor=4169E1
-[jsr-version-href]: https://jsr.io/@luxass/vitest-testdirs
+[npm-version-src]: https://img.shields.io/npm/v/vsix-utils?style=flat&colorA=18181B&colorB=4169E1
+[npm-version-href]: https://npmjs.com/package/vsix-utils
+[npm-downloads-src]: https://img.shields.io/npm/dm/vsix-utils?style=flat&colorA=18181B&colorB=4169E1
+[npm-downloads-href]: https://npmjs.com/package/vsix-utils
+[jsr-version-src]: https://jsr.io/badges/@luxass/vsix-utils?style=flat&labelColor=18181B&logoColor=4169E1
+[jsr-version-href]: https://jsr.io/@luxass/vsix-utils
