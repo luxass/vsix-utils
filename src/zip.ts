@@ -102,12 +102,7 @@ export interface WriteVsixOptions {
  * ```
  */
 export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
-  let { files, packagePath, force, epoch } = options;
-
-  // remove the existing package if it exists
-  if (existsSync(packagePath) && !force) {
-    throw new Error(`package already exists at ${packagePath}`);
-  }
+  const { files, packagePath, force, epoch } = options;
 
   if (!files || files.length === 0) {
     throw new Error("no files specified to package");
@@ -117,8 +112,11 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     throw new Error("no package path specified");
   }
 
-  // remove the existing package if it exists
-  if (existsSync(packagePath) && force) {
+  if (existsSync(packagePath)) {
+    if (!force) {
+      throw new Error(`package already exists at ${packagePath}`);
+    }
+
     await unlink(packagePath);
   }
 
@@ -128,42 +126,48 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
   if (epoch != null) {
     zipOptions.mtime = new Date(epoch * 1000);
-    files = files.sort((a, b) => a.path.localeCompare(b.path));
+    files.sort((a, b) => a.path.localeCompare(b.path));
   }
 
-  for (const f of files) {
-    if (isInMemoryFile(f)) {
-      zip.addBuffer(
-        typeof f.contents === "string"
-          ? Buffer.from(f.contents, "utf8")
-          : f.contents,
-        f.path,
-        { ...zipOptions },
-      );
-      continue;
+  try {
+    for (const f of files) {
+      if (isInMemoryFile(f)) {
+        zip.addBuffer(
+          typeof f.contents === "string"
+            ? Buffer.from(f.contents, "utf8")
+            : f.contents,
+          f.path,
+          { ...zipOptions },
+        );
+        continue;
+      }
+
+      zip.addFile(f.localPath, f.path, { ...zipOptions });
     }
 
-    zip.addFile(f.localPath, f.path, { ...zipOptions });
+    zip.end();
+
+    const zipStream = createWriteStream(packagePath);
+    zip.outputStream.pipe(zipStream);
+
+    await new Promise<void>((resolve, reject) => {
+      zipStream.once("finish", resolve);
+      zipStream.once("error", reject);
+      zip.once("error", reject);
+    });
+
+    return true;
+  } catch (err) {
+    if (existsSync(packagePath)) {
+      await unlink(packagePath);
+    }
+
+    if (err instanceof Error) {
+      throw new TypeError(`failed to create package: ${err.message}`);
+    }
+
+    throw new Error(`failed to create package: ${err}`);
   }
-
-  zip.end();
-
-  const zipStream = createWriteStream(packagePath);
-  zip.outputStream.pipe(zipStream);
-
-  return new Promise((resolve, reject) => {
-    zip.once("error", (err) => {
-      reject(err);
-    });
-
-    zipStream.once("finish", () => {
-      resolve(true);
-    });
-
-    zipStream.once("error", (err) => {
-      reject(err);
-    });
-  });
 }
 
 export interface ReadVsixOptions {
