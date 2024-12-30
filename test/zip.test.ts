@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, expect, it, onTestFinished } from "vitest";
+import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
 import { readVsix, writeVsix } from "../src/zip";
 
