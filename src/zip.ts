@@ -4,7 +4,7 @@
  *
  *  @example
  * ```ts
- * import { readVsix, writeVsix } from "vsix-utils/zip";
+ * import { writeVsix } from "vsix-utils/zip";
  *
  * const success = await writeVsix({
  *   files: [
@@ -22,6 +22,17 @@
  * });
  *
  * console.log(sucesss) // true
+ * ```
+ *
+ * @example
+ * ```ts
+ * import { readVsix } from "vsix-utils/zip";
+ *
+ * const { files, manifest } = await readVsix({
+ *   packagePath: "path/to/package.vsix"
+ * });
+ *
+ * console.log(files) // Map { 'file.txt' => <Buffer 66 69 6c 65 20 63 6f 6e 74 65 6e 74 73> }
  * ```
  */
 
