@@ -137,6 +137,8 @@ describe("write vsix", () => {
   it("should throw if local file does not exist", async () => {
     const path = await testdir({
       "test.txt": "test content",
+    }, {
+      cleanup: false,
     });
 
     await expect(writeVsix({

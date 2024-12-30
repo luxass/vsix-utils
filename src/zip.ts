@@ -39,7 +39,7 @@
 import type { EventEmitter } from "node:events";
 import type { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
-import { createWriteStream } from "node:fs";
+import { createWriteStream, existsSync } from "node:fs";
 import { unlink } from "node:fs/promises";
 import { XMLParser } from "fast-xml-parser";
 import yauzl from "yauzl";
@@ -112,8 +112,7 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     throw new Error("no package path specified");
   }
 
-  // if (existsSync(packagePath)) {
-  if (false) {
+  if (existsSync(packagePath)) {
     if (!force) {
       throw new Error(`package already exists at ${packagePath}`);
     }
@@ -159,9 +158,9 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
     return true;
   } catch (err) {
-    // if (existsSync(packagePath)) {
-    //   await unlink(packagePath);
-    // }
+    if (existsSync(packagePath)) {
+      await unlink(packagePath);
+    }
 
     if (err instanceof Error) {
       throw new TypeError(`failed to create package: ${err.message}`);
