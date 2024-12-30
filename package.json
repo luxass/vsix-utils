@@ -1,6 +1,6 @@
 {
   "name": "vsix-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "utilities for working with VSIX packages",
   "type": "module",
   "author": {
