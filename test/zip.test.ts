@@ -1,0 +1,208 @@
+import { existsSync } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import { testdir } from "vitest-testdirs";
+import { writeVsix } from "../src/zip";
+
+describe("write vsix", () => {
+  it("should throw if package path exists and force is false", async () => {
+    const testdirFiles = {
+      "existing.vsix": "",
+      "test.txt": "test content",
+    };
+
+    const path = await testdir(testdirFiles);
+
+    await expect(writeVsix({
+      packagePath: join(path, "existing.vsix"),
+      files: [
+        {
+          type: "local",
+          localPath: join(path, "test.txt"),
+          path: "test.txt",
+        },
+      ],
+    })).rejects.toThrow(
+      `package already exists at ${join(path, "existing.vsix")}`,
+    );
+  });
+
+  it("should throw if no files specified", async () => {
+    const path = await testdir({
+      "test.txt": "test content",
+    });
+
+    await expect(writeVsix({
+      packagePath: join(path, "test.vsix"),
+      files: [],
+    })).rejects.toThrow("no files specified to package");
+  });
+
+  it("should throw if no package path specified", async () => {
+    const path = await testdir({
+      "test.txt": "test content",
+    });
+
+    await expect(writeVsix({
+      packagePath: "",
+      files: [
+        {
+          type: "local",
+          localPath: join(path, "test.txt"),
+          path: "test.txt",
+        },
+      ],
+    })).rejects.toThrow("no package path specified");
+  });
+
+  it("should create vsix with local files", async () => {
+    const path = await testdir({
+      "test.txt": "test content",
+    });
+
+    const result = await writeVsix({
+      packagePath: join(path, "pkg.vsix"),
+      files: [
+        {
+          type: "local",
+          localPath: join(path, "test.txt"),
+          path: "test.txt",
+        },
+      ],
+    });
+
+    expect(result).toBe(true);
+    expect(existsSync(join(path, "pkg.vsix"))).toBe(true);
+
+    const content = await readFile(join(path, "test.txt"), "utf-8");
+    expect(content).toBe("test content");
+  });
+
+  it("should create vsix with in-memory files", async () => {
+    const path = await testdir({
+      "test.txt": "test content",
+    });
+
+    const result = await writeVsix({
+      packagePath: join(path, "pkg.vsix"),
+      files: [
+        {
+          type: "in-memory",
+          contents: "test content",
+          path: "test.txt",
+        },
+      ],
+    });
+
+    expect(result).toBe(true);
+    expect(existsSync(join(path, "pkg.vsix"))).toBe(true);
+
+    const content = await readFile(join(path, "test.txt"), "utf-8");
+    expect(content).toBe("test content");
+  });
+
+  it("should overwrite existing package if `force` is enabled", async () => {
+    const path = await testdir({
+      "pkg.vsix": "hello world",
+      "test.txt": "test content",
+    });
+
+    const metadata = await stat(join(path, "pkg.vsix"));
+
+    const result = await writeVsix({
+      packagePath: join(path, "pkg.vsix"),
+      files: [
+        {
+          type: "in-memory",
+          contents: "test content",
+          path: "test.txt",
+        },
+      ],
+      force: true,
+    });
+
+    expect(result).toBe(true);
+    expect(existsSync(join(path, "pkg.vsix"))).toBe(true);
+
+    const newMetadata = await stat(join(path, "pkg.vsix"));
+    expect(newMetadata.mtimeMs).not.toBe(metadata.mtimeMs);
+
+    const content = await readFile(join(path, "test.txt"), "utf-8");
+    expect(content).toBe("test content");
+  });
+
+  it("should throw if local file does not exist", async () => {
+    const path = await testdir({
+      "test.txt": "test content",
+    });
+
+    await expect(writeVsix({
+      packagePath: join(path, "pkg.vsix"),
+      files: [
+        {
+          type: "local",
+          localPath: join(path, "non-existent.txt"),
+          path: "test.txt",
+        },
+      ],
+    })).rejects.toThrow(
+      `ENOENT: no such file or directory, stat '${
+        join(path, "non-existent.txt")
+      }'`,
+    );
+  });
+
+  it("should be able to customize epoch", async () => {
+    const path = await testdir({
+      "empty.txt": "",
+    });
+
+    const [result1, result2, result3] = await Promise.all([
+      writeVsix({
+        packagePath: join(path, "pkg-1.vsix"),
+        files: [
+          {
+            type: "in-memory",
+            contents: "test content",
+            path: "test.txt",
+          },
+        ],
+        epoch: 1000000000,
+      }),
+      writeVsix({
+        packagePath: join(path, "pkg-2.vsix"),
+        files: [
+          {
+            type: "in-memory",
+            contents: "test content",
+            path: "test.txt",
+          },
+        ],
+        epoch: 1000000000,
+      }),
+      writeVsix({
+        packagePath: join(path, "pkg-3.vsix"),
+        files: [
+          {
+            type: "in-memory",
+            contents: "test content",
+            path: "test.txt",
+          },
+        ],
+        epoch: 1000000002,
+      }),
+    ]);
+
+    expect(result1).toBe(true);
+    expect(result2).toBe(true);
+    expect(result3).toBe(true);
+
+    const content1 = await readFile(join(path, "pkg-1.vsix"));
+    const content2 = await readFile(join(path, "pkg-2.vsix"));
+    const content3 = await readFile(join(path, "pkg-3.vsix"));
+
+    expect(content1).toEqual(content2);
+    expect(content1).not.toEqual(content3);
+  });
+});
