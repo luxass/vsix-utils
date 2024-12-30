@@ -139,12 +139,6 @@ describe("write vsix", () => {
       "test.txt": "test content",
     });
 
-    onTestFinished(async () => {
-      const files = await readdir(path);
-
-      console.error(files);
-    });
-
     await expect(writeVsix({
       packagePath: join(path, "pkg.vsix"),
       files: [
@@ -155,7 +149,7 @@ describe("write vsix", () => {
         },
       ],
     })).rejects.toThrow();
-    // expect(existsSync(join(path, "pkg.vsix"))).toBe(false);
+    expect(existsSync(join(path, "pkg.vsix"))).toBe(false);
   });
 
   it("should be able to customize epoch", async () => {
