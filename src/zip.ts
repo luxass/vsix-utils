@@ -102,7 +102,7 @@ export interface WriteVsixOptions {
  * ```
  */
 export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
-  const { files, packagePath, force, epoch } = options;
+  const { files, packagePath, force: _, epoch } = options;
 
   if (!files || files.length === 0) {
     throw new Error("no files specified to package");
@@ -112,13 +112,13 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     throw new Error("no package path specified");
   }
 
-  if (existsSync(packagePath)) {
-    if (!force) {
-      throw new Error(`package already exists at ${packagePath}`);
-    }
+  // if (existsSync(packagePath)) {
+  //   if (!force) {
+  //     throw new Error(`package already exists at ${packagePath}`);
+  //   }
 
-    await unlink(packagePath);
-  }
+  //   await unlink(packagePath);
+  // }
 
   // TODO: remove this when https://github.com/DefinitelyTyped/DefinitelyTyped/pull/71523 has been merged
   const zip = new yazl.ZipFile() as yazl.ZipFile & EventEmitter;
