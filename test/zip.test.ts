@@ -148,6 +148,7 @@ describe("write vsix", () => {
 
       await rm(path, {
         recursive: true,
+        force: true,
       });
     });
 
