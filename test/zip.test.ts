@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
-import { readFile, stat } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
 import { readVsix, writeVsix } from "../src/zip";
 
@@ -139,6 +139,12 @@ describe("write vsix", () => {
       "test.txt": "test content",
     }, {
       cleanup: false,
+    });
+
+    onTestFinished(async () => {
+      const files = await readdir(path);
+
+      console.error(files);
     });
 
     await expect(writeVsix({
