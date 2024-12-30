@@ -39,7 +39,7 @@
 import type { EventEmitter } from "node:events";
 import type { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
-import { createWriteStream, existsSync } from "node:fs";
+import { createWriteStream } from "node:fs";
 import { unlink } from "node:fs/promises";
 import { XMLParser } from "fast-xml-parser";
 import yauzl from "yauzl";
@@ -159,9 +159,9 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
     return true;
   } catch (err) {
-    if (existsSync(packagePath)) {
-      await unlink(packagePath);
-    }
+    // if (existsSync(packagePath)) {
+    //   await unlink(packagePath);
+    // }
 
     if (err instanceof Error) {
       throw new TypeError(`failed to create package: ${err.message}`);
