@@ -110,6 +110,8 @@ describe("write vsix", () => {
 
     const metadata = await stat(join(path, "pkg.vsix"));
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const result = await writeVsix({
       packagePath: join(path, "pkg.vsix"),
       files: [
@@ -126,10 +128,6 @@ describe("write vsix", () => {
     expect(existsSync(join(path, "pkg.vsix"))).toBe(true);
 
     const newMetadata = await stat(join(path, "pkg.vsix"));
-    console.error({
-      newMetadata,
-      metadata,
-    });
     expect(newMetadata.mtimeMs).not.toBe(metadata.mtimeMs);
 
     const content = await readFile(join(path, "test.txt"), "utf-8");
