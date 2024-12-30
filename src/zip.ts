@@ -153,6 +153,7 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
   return new Promise((resolve, reject) => {
     zip.once("error", (err) => {
+      console.error("error", err);
       reject(err);
     });
 
