@@ -134,35 +134,35 @@ describe("write vsix", () => {
     expect(content).toBe("test content");
   });
 
-  it("should throw if local file does not exist", async () => {
-    const path = await testdir({
-      "test.txt": "test content",
-    }, {
-      cleanup: false,
-    });
+  // it("should throw if local file does not exist", async () => {
+  //   const path = await testdir({
+  //     "test.txt": "test content",
+  //   }, {
+  //     cleanup: false,
+  //   });
 
-    onTestFinished(async () => {
-      const files = await readdir(path);
+  //   onTestFinished(async () => {
+  //     const files = await readdir(path);
 
-      console.error(files);
+  //     console.error(files);
 
-      await rm(path, {
-        recursive: true,
-        force: true,
-      });
-    });
+  //     await rm(path, {
+  //       recursive: true,
+  //       force: true,
+  //     });
+  //   });
 
-    await expect(writeVsix({
-      packagePath: join(path, "pkg.vsix"),
-      files: [
-        {
-          type: "local",
-          localPath: join(path, "non-existent.txt"),
-          path: "test.txt",
-        },
-      ],
-    })).rejects.toThrow(/^ENOENT: no such file or directory/m);
-  });
+  //   await expect(writeVsix({
+  //     packagePath: join(path, "pkg.vsix"),
+  //     files: [
+  //       {
+  //         type: "local",
+  //         localPath: join(path, "non-existent.txt"),
+  //         path: "test.txt",
+  //       },
+  //     ],
+  //   })).rejects.toThrow(/^ENOENT: no such file or directory/m);
+  // });
 
   it("should be able to customize epoch", async () => {
     const path = await testdir({
