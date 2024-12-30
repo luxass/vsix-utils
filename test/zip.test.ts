@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readdir, readFile, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it, onTestFinished } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
@@ -145,6 +145,10 @@ describe("write vsix", () => {
       const files = await readdir(path);
 
       console.error(files);
+
+      await rm(path, {
+        recursive: true,
+      });
     });
 
     await expect(writeVsix({
