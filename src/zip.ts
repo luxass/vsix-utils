@@ -119,11 +119,7 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
   // remove the existing package if it exists
   if (existsSync(packagePath) && force) {
-    await unlink(packagePath).then(() => {
-      console.error("unlink");
-    }).catch((err) => {
-      console.error("unlink error", err);
-    });
+    await unlink(packagePath);
   }
 
   // TODO: remove this when https://github.com/DefinitelyTyped/DefinitelyTyped/pull/71523 has been merged
