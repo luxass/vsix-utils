@@ -52,6 +52,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "fast-xml-parser": "^4.5.1",
     "yauzl": "^3.2.0",
     "yazl": "^3.3.1"
   },
@@ -66,6 +67,6 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8",
-    "vitest-testdirs": "^1.5.0"
+    "vitest-testdirs": "^1.6.0"
   }
 }
