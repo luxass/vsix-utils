@@ -1,0 +1,15 @@
+{
+  "name": "@luxass/vsix-utils",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./zip": "./src/utils.ts"
+  },
+  "exclude": [
+    "tsup.config.ts",
+    "eslint.config.js",
+    "pnpm-lock.yaml",
+    ".github/**",
+    "test"
+  ]
+}
