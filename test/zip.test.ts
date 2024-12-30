@@ -155,6 +155,7 @@ describe("write vsix", () => {
         },
       ],
     })).rejects.toThrow();
+    expect(existsSync(join(path, "pkg.vsix"))).toBe(false);
   });
 
   it("should be able to customize epoch", async () => {
