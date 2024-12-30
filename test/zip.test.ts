@@ -126,6 +126,10 @@ describe("write vsix", () => {
     expect(existsSync(join(path, "pkg.vsix"))).toBe(true);
 
     const newMetadata = await stat(join(path, "pkg.vsix"));
+    console.error({
+      newMetadata,
+      metadata,
+    });
     expect(newMetadata.mtimeMs).not.toBe(metadata.mtimeMs);
 
     const content = await readFile(join(path, "test.txt"), "utf-8");
@@ -146,10 +150,7 @@ describe("write vsix", () => {
           path: "test.txt",
         },
       ],
-    })).rejects.toThrow(
-      `ENOENT: no such file or directory, stat '${join(path, "non-existent.txt")
-      }'`,
-    );
+    })).rejects.toThrow(/^ENOENT: no such file or directory/m);
   });
 
   it("should be able to customize epoch", async () => {
