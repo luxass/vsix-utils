@@ -6,7 +6,7 @@
 import type { Buffer } from "node:buffer";
 import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
-import path, { isAbsolute, normalize, resolve } from "node:path";
+import path, { isAbsolute, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 

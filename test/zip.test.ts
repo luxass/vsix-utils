@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { accessSync, constants, existsSync } from "node:fs";
 import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -138,6 +138,8 @@ describe("write vsix", () => {
     const path = await testdir({
       "test.txt": "test content",
     });
+
+    console.error(accessSync(path, constants.W_OK));
 
     await expect(writeVsix({
       packagePath: join(path, "pkg.vsix"),
