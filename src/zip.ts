@@ -147,7 +147,10 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
     zip.end();
 
-    const zipStream = createWriteStream(packagePath);
+    const zipStream = createWriteStream(packagePath, {
+      mode: 0o755,
+    });
+
     zip.outputStream.pipe(zipStream);
 
     await new Promise<void>((resolve, reject) => {
