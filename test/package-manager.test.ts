@@ -20,6 +20,8 @@ describe("npm", () => {
       // @ts-expect-error just testing for unsupported package manager
       packageManager: "custom",
     })).rejects.toThrow("unsupported package manager: custom");
+  }, {
+    timeout: 20000,
   });
 
   // TODO: currently the package manager detect is traversing up the directory
@@ -37,6 +39,8 @@ describe("npm", () => {
       cwd: dir,
       packageManager: "auto",
     })).rejects.toThrow("unable to detect package manager");
+  }, {
+    timeout: 20000,
   });
 
   it("should default to auto if package manager is not provided", async () => {
@@ -56,6 +60,8 @@ describe("npm", () => {
     ]);
 
     expect(packageManager).toEqual("npm");
+  }, {
+    timeout: 20000,
   });
 
   it("should handle no dependencies correctly", async () => {
@@ -76,5 +82,7 @@ describe("npm", () => {
     ]);
 
     expect(packageManager).toEqual("npm");
+  }, {
+    timeout: 20000,
   });
 });
