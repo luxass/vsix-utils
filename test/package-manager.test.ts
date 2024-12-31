@@ -8,7 +8,8 @@ import { readProjectManifest } from "../src/manifest";
 
 const execAsync = promisify(exec);
 
-describe("npm", () => {
+// timeout should be 20s as npm can take a bit to install
+describe("npm", { timeout: 20000 }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -20,8 +21,6 @@ describe("npm", () => {
       // @ts-expect-error just testing for unsupported package manager
       packageManager: "custom",
     })).rejects.toThrow("unsupported package manager: custom");
-  }, {
-    timeout: 20000,
   });
 
   // TODO: currently the package manager detect is traversing up the directory
@@ -39,8 +38,6 @@ describe("npm", () => {
       cwd: dir,
       packageManager: "auto",
     })).rejects.toThrow("unable to detect package manager");
-  }, {
-    timeout: 20000,
   });
 
   it("should default to auto if package manager is not provided", async () => {
@@ -60,8 +57,6 @@ describe("npm", () => {
     ]);
 
     expect(packageManager).toEqual("npm");
-  }, {
-    timeout: 20000,
   });
 
   it("should handle no dependencies correctly", async () => {
@@ -82,7 +77,27 @@ describe("npm", () => {
     ]);
 
     expect(packageManager).toEqual("npm");
-  }, {
-    timeout: 20000,
+  });
+
+  it("should handle dependencies correctly", async () => {
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/with-dependencies");
+    const dir = await testdir(fsFiles);
+
+    await execAsync("npm install", { cwd: dir });
+
+    const { manifest } = await readProjectManifest(dir);
+
+    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+      cwd: dir,
+      packageManager: "npm",
+    });
+
+    // prevent issues with running tests locally, as the path will be different
+    const dependenciesWithRelative = dependencies.map((dep) => {
+      return dep.replace(resolve(`${dir}/../../`), "").slice(1);
+    });
+
+    expect(packageManager).toEqual("npm");
+    expect(dependenciesWithRelative).toMatchSnapshot();
   });
 });

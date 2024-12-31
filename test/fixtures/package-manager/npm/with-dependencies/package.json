@@ -1,0 +1,22 @@
+{
+  "name": "with-dependencies",
+  "version": "0.0.1",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxass/vsix-utils.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.26.0",
+    "fast-xml-parser": "^4.5.1",
+    "package-manager-detector": "^0.2.8"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.7.2"
+  }
+}
