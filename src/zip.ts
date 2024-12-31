@@ -39,7 +39,7 @@
 import type { EventEmitter } from "node:events";
 import type { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
-import { createWriteStream, existsSync } from "node:fs";
+import { access, createWriteStream, existsSync } from "node:fs";
 import { constants, unlink } from "node:fs/promises";
 import { XMLParser } from "fast-xml-parser";
 import yauzl from "yauzl";
@@ -164,6 +164,9 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     // remove after flaky test is fixed
     console.error(err);
     if (existsSync(packagePath)) {
+      access(packagePath, constants.W_OK, (err) => {
+        console.error("permissions error", err);
+      });
       await unlink(packagePath);
     }
 
