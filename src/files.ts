@@ -5,7 +5,12 @@
 
 import type { Buffer } from "node:buffer";
 import type { Manifest, PackageManager } from "./types";
+import { exec } from "node:child_process";
+import { isAbsolute } from "node:path";
 import process from "node:process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 
 export interface VsixLocalFile {
   type: "local";
@@ -32,8 +37,9 @@ export function isInMemoryFile(file: VsixFile): file is VsixInMemoryFile {
 export interface ExtensionDependenciesOptions {
   /**
    * The package manager to use.
+   * @default "auto"
    */
-  packageManager: PackageManager;
+  packageManager?: PackageManager;
 
   /**
    * The current working directory
@@ -51,19 +57,54 @@ export interface ExtensionDependenciesResult {
   /**
    * The package manager used to resolve the dependencies.
    */
-  packageManager: PackageManager;
+  packageManager: Exclude<PackageManager, "auto"> | null;
 }
 
-export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependenciesResult | null> {
+export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependenciesResult> {
   const {
-    packageManager: pm,
+    packageManager: pm = "auto",
     cwd = process.cwd(),
   } = options;
 
-  const packageManager = pm;
+  let packageManager: Exclude<PackageManager, "auto"> | null = null;
+
+  if (pm === "auto") {
+    const detect = await import("package-manager-detector/detect").then((m) => m.detect);
+
+    const result = await detect({ cwd });
+
+    if (result == null) {
+      throw new Error("could not detect package manager");
+    }
+
+    if (result.name === "deno" || result.name === "bun") {
+      throw new Error(`unsupported package manager: ${result.name}`);
+    }
+
+    packageManager = result.name;
+  } else {
+    packageManager = pm;
+  }
+
+  const dependencies = new Set<string>();
+
+  if (packageManager === "npm") {
+    const { stdout } = await execAsync("npm list --production --parseable --depth=99999 --loglevel=error", { cwd });
+    const lines = stdout.split(/[\r\n]/).filter((path) => isAbsolute(path));
+
+    for (const line of lines) {
+      dependencies.add(line);
+    }
+  } else if (packageManager === "yarn") {
+    throw new Error("yarn is not supported yet");
+  } else if (packageManager === "pnpm") {
+    throw new Error("pnpm is not supported yet");
+  } else {
+    throw new Error(`unsupported package manager: ${packageManager}`);
+  }
 
   return {
-    dependencies: [],
+    dependencies: Array.from(dependencies),
     packageManager,
   };
 }
