@@ -52,9 +52,7 @@ describe("npm", { timeout: 20000 }, () => {
       cwd: dir,
     });
 
-    expect(dependencies).toEqual([
-      resolve(dir),
-    ]);
+    expect(dependencies).toEqual([]);
 
     expect(packageManager).toEqual("npm");
   });
@@ -72,9 +70,7 @@ describe("npm", { timeout: 20000 }, () => {
       packageManager: "npm",
     });
 
-    expect(dependencies).toEqual([
-      resolve(dir),
-    ]);
+    expect(dependencies).toEqual([]);
 
     expect(packageManager).toEqual("npm");
   });
@@ -94,7 +90,7 @@ describe("npm", { timeout: 20000 }, () => {
 
     // prevent issues with running tests locally, as the path will be different
     const dependenciesWithRelative = dependencies.map((dep) => {
-      return dep.replace(resolve(`${dir}/../../`), "").slice(1);
+      return dep.path.replace(resolve(`${dir}/../../`), "").slice(1).replace(/\\/g, "/");
     });
 
     expect(packageManager).toEqual("npm");

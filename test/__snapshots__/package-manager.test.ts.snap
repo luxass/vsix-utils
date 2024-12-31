@@ -2,7 +2,6 @@
 
 exports[`npm > should handle dependencies correctly 1`] = `
 [
-  ".vitest-testdirs/vitest-package-manager-npm-should-handle-dependencies-correctly",
   ".vitest-testdirs/vitest-package-manager-npm-should-handle-dependencies-correctly/node_modules/@babel/core",
   ".vitest-testdirs/vitest-package-manager-npm-should-handle-dependencies-correctly/node_modules/fast-xml-parser",
   ".vitest-testdirs/vitest-package-manager-npm-should-handle-dependencies-correctly/node_modules/package-manager-detector",

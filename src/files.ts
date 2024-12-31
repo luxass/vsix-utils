@@ -6,7 +6,7 @@
 import type { Buffer } from "node:buffer";
 import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
-import { isAbsolute } from "node:path";
+import { isAbsolute, normalize, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 
@@ -48,11 +48,28 @@ export interface ExtensionDependenciesOptions {
   cwd: string;
 }
 
+export interface ExtensionDependency {
+  /**
+   * The name of the dependency.
+   */
+  name: string;
+
+  /**
+   * The version of the dependency.
+   */
+  version?: string;
+
+  /**
+   * The path to the dependency.
+   */
+  path: string;
+}
+
 export interface ExtensionDependenciesResult {
   /**
    * The dependencies of the extension.
    */
-  dependencies: string[];
+  dependencies: ExtensionDependency[];
 
   /**
    * The package manager used to resolve the dependencies.
@@ -86,14 +103,35 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     packageManager = pm;
   }
 
-  const dependencies = new Set<string>();
+  const dependencies = new Set<ExtensionDependency>();
 
   if (packageManager === "npm") {
     const { stdout } = await execAsync("npm list --production --parseable --depth=99999 --loglevel=error", { cwd });
     const lines = stdout.split(/[\r\n]/).filter((path) => isAbsolute(path));
 
     for (const line of lines) {
-      dependencies.add(line);
+      console.error({
+        a: line,
+        b: cwd,
+        c: resolve(cwd),
+      });
+      if (line === resolve(cwd)) {
+        continue;
+      }
+
+      const dependency = line.split("/node_modules/")[1];
+
+      if (dependency == null) {
+        throw new Error(`could not parse dependency: ${line}`);
+      }
+
+      const dependencyName = dependency.split("/")[0];
+
+      dependencies.add({
+        name: dependencyName!,
+        version: manifest.dependencies != null ? manifest.dependencies[dependencyName!] : undefined,
+        path: line,
+      });
     }
   } else if (packageManager === "yarn") {
     throw new Error("yarn is not supported yet");
