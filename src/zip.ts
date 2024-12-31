@@ -278,10 +278,10 @@ export async function readVsix(options: ReadVsixOptions): Promise<RawVsixPackage
  * @throws {Error} If the stream emits an error event before completion
  */
 async function bufferStream(stream: Readable): Promise<Buffer> {
-  return await new Promise((c, e) => {
+  return await new Promise((resolve, reject) => {
     const buffers: Buffer[] = [];
     stream.on("data", (buffer) => buffers.push(buffer));
-    stream.once("error", e);
-    stream.once("end", () => c(Buffer.concat(buffers)));
+    stream.once("error", reject);
+    stream.once("end", () => resolve(Buffer.concat(buffers)));
   });
 }
