@@ -158,6 +158,8 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
     return true;
   } catch (err) {
+    // remove after flaky test is fixed
+    console.error(err);
     if (existsSync(packagePath)) {
       await unlink(packagePath);
     }
