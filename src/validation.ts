@@ -1,3 +1,8 @@
+/**
+ * This module contains utility functions for validating manifests.
+ * @module validation
+ */
+
 import type { Manifest } from "./types";
 import { satisfies, valid, validRange } from "semver";
 import { VSCE_TRUSTED_SOURCES } from "./constants";
