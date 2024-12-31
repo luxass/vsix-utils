@@ -1,5 +1,5 @@
 import { accessSync, constants, existsSync, lstatSync } from "node:fs";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, stat, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
@@ -162,7 +162,8 @@ describe("write vsix", () => {
 
     try {
       console.error("BEFORE LSTAT SYNC 2");
-      lstatSync(join(path, "pkg.vsix"));
+      console.error(lstatSync(join(path, "pkg.vsix")));
+      await unlink(join(path, "pkg.vsix"));
     } catch (err) {
       console.error("TRY CATCH 2", err);
     }
