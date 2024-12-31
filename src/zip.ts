@@ -159,6 +159,8 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
       zip.once("error", reject);
     });
 
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     return true;
   } catch (err) {
     // remove after flaky test is fixed
