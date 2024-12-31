@@ -1,5 +1,6 @@
 import type { Manifest } from "../src/types";
 import { exec } from "node:child_process";
+import { sep } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import { assert } from "vitest";
@@ -43,5 +44,5 @@ export function transformAbsolutePathToVitestTestdirPath(path?: string): string 
     throw new Error("path is required");
   }
 
-  return path.replace(`${process.cwd()}/`, "").replace(/\\/g, "/");
+  return path.replace(`${process.cwd()}${sep}`, "").replace(/\\/g, "/");
 }
