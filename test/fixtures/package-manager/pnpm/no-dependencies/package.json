@@ -2,7 +2,7 @@
   "name": "no-dependencies",
   "version": "0.0.1",
   "private": true,
-  "packageManager": "npm@10.9.0",
+  "packageManager": "pnpm@9.15.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/luxass/vsix-utils.git"
