@@ -73,6 +73,7 @@
   },
   "dependencies": {
     "fast-xml-parser": "^4.5.1",
+    "package-manager-detector": "^0.2.8",
     "semver": "^7.6.3",
     "yauzl": "^3.2.0",
     "yazl": "^3.3.1"
