@@ -160,6 +160,13 @@ describe("write vsix", () => {
       ],
     })).rejects.toThrow();
 
+    try {
+      console.error("BEFORE LSTAT SYNC 2");
+      lstatSync(join(path, "pkg.vsix"));
+    } catch (err) {
+      console.error("TRY CATCH 2", err);
+    }
+
     expect(existsSync(join(path, "pkg.vsix"))).toBe(false);
   });
 
