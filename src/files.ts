@@ -6,7 +6,7 @@
 import type { Buffer } from "node:buffer";
 import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
-import { isAbsolute, normalize, resolve } from "node:path";
+import path, { isAbsolute, normalize, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 
@@ -110,22 +110,17 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     const lines = stdout.split(/[\r\n]/).filter((path) => isAbsolute(path));
 
     for (const line of lines) {
-      console.error({
-        a: line,
-        b: cwd,
-        c: resolve(cwd),
-      });
       if (line === resolve(cwd)) {
         continue;
       }
 
-      const dependency = line.split("/node_modules/")[1];
+      const dependency = line.split(`${path.sep}node_modules${path.sep}`)[1];
 
       if (dependency == null) {
         throw new Error(`could not parse dependency: ${line}`);
       }
 
-      const dependencyName = dependency.split("/")[0];
+      const dependencyName = dependency.split(path.sep)[0];
 
       dependencies.add({
         name: dependencyName!,
