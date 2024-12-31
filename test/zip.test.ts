@@ -139,18 +139,6 @@ describe("write vsix", () => {
       "test.txt": "test content",
     });
 
-    if (process.platform === "win32") {
-      try {
-        accessSync(path, constants.W_OK);
-        existsSync(join(path, "pkg.vsix"));
-        console.error("BEFORE LSTAT SYNC");
-        lstatSync(join(path, "pkg.vsix"));
-        console.error("AFTER LSTAT SYNC");
-      } catch (err) {
-        console.error("TRY CATCH", err);
-      }
-    }
-
     await expect(writeVsix({
       packagePath: join(path, "pkg.vsix"),
       files: [
@@ -161,24 +149,6 @@ describe("write vsix", () => {
         },
       ],
     })).rejects.toThrow();
-
-    if (process.platform === "win32") {
-      try {
-        console.error("BEFORE LSTAT SYNC 2");
-        console.error(lstatSync(join(path, "pkg.vsix")));
-        await unlink(join(path, "pkg.vsix"));
-        console.error("AFTER UNLINK");
-      } catch (err) {
-        console.error("TRY CATCH 2", err);
-      }
-
-      try {
-        console.error("BEFORE LSTAT SYNC 3");
-        console.error(lstatSync(join(path, "pkg.vsix")));
-      } catch (err) {
-        console.error("TRY CATCH 3", err);
-      }
-    }
 
     expect(existsSync(join(path, "pkg.vsix"))).toBe(false);
   });
