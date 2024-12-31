@@ -1,0 +1,51 @@
+{
+  "name": "no-entrypoint",
+  "displayName": "No Entrypoint Extension",
+  "version": "0.0.1",
+  "description": "A simple extension for vsix-builder tests",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxass/vsix-builder.git"
+  },
+  "categories": [
+    "Other"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "activationEvents": [],
+  "contributes": {
+    "problemMatchers": [
+      {
+        "name": "tsup",
+        "label": "tsup problems with --format esm,cjs",
+        "owner": "tsup",
+        "source": "tsup",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "^✘\\s+\\[ERROR\\]\\s+(.+)$",
+            "message": 1
+          },
+          {
+            "regexp": "^\\s*$"
+          },
+          {
+            "regexp": "^\\s+(.+):(\\d+):(\\d+):$",
+            "file": 1,
+            "line": 2,
+            "column": 3
+          }
+        ],
+        "applyTo": "closedDocuments"
+      }
+    ]
+  },
+  "scripts": {
+    "package": "pnpm vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.2.1"
+  }
+}

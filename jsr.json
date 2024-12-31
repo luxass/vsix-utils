@@ -3,13 +3,15 @@
   "version": "0.0.3",
   "exports": {
     ".": "./src/index.ts",
-    "./zip": "./src/zip.ts"
+    "./zip": "./src/zip.ts",
+    "./files": "./src/files.ts"
   },
   "exclude": [
     "tsup.config.ts",
     "eslint.config.js",
     "pnpm-lock.yaml",
     ".github/**",
-    "test"
+    "test",
+    "pnpm-workspace.yaml"
   ]
 }

@@ -40,7 +40,7 @@ import type { EventEmitter } from "node:events";
 import type { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
 import { createWriteStream, existsSync } from "node:fs";
-import { unlink } from "node:fs/promises";
+import { constants, unlink } from "node:fs/promises";
 import { XMLParser } from "fast-xml-parser";
 import yauzl from "yauzl";
 import yazl from "yazl";
@@ -147,13 +147,19 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
 
     zip.end();
 
-    const zipStream = createWriteStream(packagePath);
+    const zipStream = createWriteStream(packagePath, {
+      mode: constants.S_IRWXU | constants.S_IRGRP | constants.S_IXGRP | constants.S_IROTH | constants.S_IXOTH,
+    });
+
     zip.outputStream.pipe(zipStream);
 
     await new Promise<void>((resolve, reject) => {
       zipStream.once("finish", resolve);
       zipStream.once("error", reject);
-      zip.once("error", reject);
+      zip.once("error", (err) => {
+        zipStream.destroy();
+        reject(err);
+      });
     });
 
     return true;
