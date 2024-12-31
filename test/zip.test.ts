@@ -168,8 +168,6 @@ describe("write vsix", () => {
         console.error(lstatSync(join(path, "pkg.vsix")));
         await unlink(join(path, "pkg.vsix"));
         console.error("AFTER UNLINK");
-
-        await writeFile(join(path, "pkg.vsix"), "hello world");
       } catch (err) {
         console.error("TRY CATCH 2", err);
       }

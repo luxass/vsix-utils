@@ -164,14 +164,7 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     // remove after flaky test is fixed
     console.error(err);
     if (existsSync(packagePath)) {
-      console.error("exists!!!");
-
-      // TODO: this if should be removed when flaky test is fixed
-      // eslint-disable-next-line node/prefer-global/process
-      if (process.platform !== "win32") {
-        console.error("unlinking");
-        await unlink(packagePath);
-      }
+      await unlink(packagePath);
     }
 
     if (err instanceof Error) {
