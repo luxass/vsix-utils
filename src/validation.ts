@@ -242,10 +242,10 @@ export async function validateProjectManifest(
   if (manifest.devDependencies != null && manifest.devDependencies["@types/vscode"] != null) {
     try {
       validateVSCodeTypesCompatability(engines.vscode, manifest.devDependencies["@types/vscode"]);
-    } catch (err) {
+    } catch {
       errors.push({
         type: "VSCODE_TYPES_INCOMPATIBILITY",
-        message: err instanceof Error ? err.message : "@types/vscode version is either higher than the specified engine version or invalid",
+        message: "@types/vscode version is either higher than the specified engine version or invalid",
       });
     }
   }

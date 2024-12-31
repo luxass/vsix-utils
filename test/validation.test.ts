@@ -173,13 +173,12 @@ describe("validate manifests", () => {
           {
             field: "main",
             message:
-							"The use of `activationEvents` field requires either `browser` or `main` to be set.",
+              "The use of `activationEvents` field requires either `browser` or `main` to be set.",
             type: "MISSING_FIELD",
           },
           {
             field: "browser",
-            message:
-							"The use of `activationEvents` field requires either `browser` or `main` to be set.",
+            message: "The use of `activationEvents` field requires either `browser` or `main` to be set.",
             type: "MISSING_FIELD",
           },
         ]);
@@ -196,7 +195,7 @@ describe("validate manifests", () => {
           {
             field: "activationEvents",
             message:
-							"Manifest needs the 'activationEvents' property, given it has a 'main' property.",
+              "Manifest needs the 'activationEvents' property, given it has a 'main' property.",
             type: "MISSING_FIELD",
           },
         ]);
@@ -213,7 +212,7 @@ describe("validate manifests", () => {
           {
             field: "activationEvents",
             message:
-							"Manifest needs the 'activationEvents' property, given it has a 'browser' property.",
+              "Manifest needs the 'activationEvents' property, given it has a 'browser' property.",
             type: "MISSING_FIELD",
           },
         ]);
@@ -234,7 +233,7 @@ describe("validate manifests", () => {
           {
             field: "engines.vscode",
             message:
-							"The `engines.vscode` field must be a valid semver version range, or 'x' for any version.",
+              "The `engines.vscode` field must be a valid semver version range, or 'x' for any version.",
             type: "INVALID_VALUE",
           },
         ]);
@@ -251,7 +250,7 @@ describe("validate manifests", () => {
           {
             field: "engines.vscode",
             message:
-							"The `engines.vscode` field must be a valid semver version range, or 'x' for any version.",
+              "The `engines.vscode` field must be a valid semver version range, or 'x' for any version.",
             type: "INVALID_VALUE",
           },
         ]);
@@ -426,7 +425,7 @@ describe("validate manifests", () => {
         {
           type: "VSCODE_TYPES_INCOMPATIBILITY",
           message:
-						"@types/vscode version is either higher than the specified engine version or invalid",
+            "@types/vscode version is either higher than the specified engine version or invalid",
         },
       ]);
     });
@@ -443,7 +442,7 @@ describe("validate manifests", () => {
         {
           type: "VSCODE_TYPES_INCOMPATIBILITY",
           message:
-						"@types/vscode version is either higher than the specified engine version or invalid",
+            "@types/vscode version is either higher than the specified engine version or invalid",
         },
       ]);
     });
@@ -461,12 +460,12 @@ describe("validate manifests", () => {
           type: "INVALID_VALUE",
           field: "engines.vscode",
           message:
-						"The `engines.vscode` field must be a valid semver version range, or 'x' for any version.",
+            "The `engines.vscode` field must be a valid semver version range, or 'x' for any version.",
         },
         {
           type: "VSCODE_TYPES_INCOMPATIBILITY",
           message:
-						"@types/vscode version is either higher than the specified engine version or invalid",
+            "@types/vscode version is either higher than the specified engine version or invalid",
         },
       ]);
     });
