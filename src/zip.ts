@@ -260,6 +260,7 @@ export async function readVsix(options: ReadVsixOptions): Promise<RawVsixPackage
       return tagName.toLowerCase();
     },
   });
+
   const manifest = parser.parse(rawManifest);
 
   return {
