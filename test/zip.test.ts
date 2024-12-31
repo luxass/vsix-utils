@@ -139,7 +139,12 @@ describe("write vsix", () => {
       "test.txt": "test content",
     });
 
-    console.error(accessSync(path, constants.W_OK));
+    try {
+      accessSync(path, constants.W_OK);
+      existsSync(join(path, "pkg.vsix"));
+    } catch (err) {
+      console.error("TRY CATCH", err);
+    }
 
     await expect(writeVsix({
       packagePath: join(path, "pkg.vsix"),
