@@ -1,5 +1,4 @@
 import { exec } from "node:child_process";
-import { resolve } from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";

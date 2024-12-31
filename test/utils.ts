@@ -1,6 +1,5 @@
 import type { Manifest } from "../src/types";
 import { exec } from "node:child_process";
-import { dirname } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import { assert } from "vitest";
