@@ -154,12 +154,18 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     zip.outputStream.pipe(zipStream);
 
     await new Promise<void>((resolve, reject) => {
-      zipStream.once("finish", resolve);
+      zipStream.once("finish", () => {
+        zipStream.close((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
       zipStream.once("error", reject);
       zip.once("error", reject);
     });
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
 
     return true;
   } catch (err) {
