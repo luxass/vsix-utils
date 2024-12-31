@@ -152,21 +152,15 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
     });
 
     zip.outputStream.pipe(zipStream);
-    let zipErrorOccurred = false;
-
-    zip.once("error", (err) => {
-      console.error("Zip error:", err);
-      zipErrorOccurred = true;
-    });
 
     await new Promise<void>((resolve, reject) => {
       zipStream.once("finish", resolve);
       zipStream.once("error", reject);
+      zip.once("error", (err) => {
+        zipStream.destroy();
+        reject(err);
+      });
     });
-
-    if (zipErrorOccurred) {
-      return false;
-    }
 
     return true;
   } catch (err) {
