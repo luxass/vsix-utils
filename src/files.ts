@@ -63,6 +63,24 @@ export interface CollectOptions {
   readme?: string;
 }
 
+/**
+ * Collects files for a VSIX package based on the provided manifest and options.
+ *
+ * @param {Manifest} manifest - The VSIX manifest containing package details
+ * @param {CollectOptions} options - Configuration options for file collection
+ * @param {string?} options.cwd - The current working directory (defaults to process.cwd())
+ * @param {string?} options.ignoreFile - The name of the ignore file to use (defaults to ".vscodeignore")
+ * @param {string[]?} options.dependencies - The dependencies to include in the package
+ * @param {string?} options.readme - The name of the readme file to include (defaults to "README.md")
+ *
+ * @returns {Promise<VsixFile[]>} A promise that resolves to an array of VsixFile objects representing the files to be included
+ * in the VSIX package. Each file object contains the local path and the target path in the extension.
+ *
+ * @remarks
+ * The function takes into account both .gitignore and .vscodeignore files if they exist.
+ * It filters files based on the ignore patterns and includes necessary files like package.json
+ * and the readme file.
+ */
 export async function collect(manifest: Manifest, options: CollectOptions): Promise<VsixFile[]> {
   const {
     cwd = process.cwd(),
@@ -170,6 +188,29 @@ export interface YarnDependency {
   children: YarnDependency[];
 }
 
+/**
+ * Retrieves all production dependencies for an extension based on the package manager being used.
+ *
+ * @param {Manifest} manifest - The extension's manifest object containing dependency information
+ * @param {ExtensionDependenciesOptions} options - Configuration options for retrieving dependencies
+ * @param {PackageManager?} options.packageManager - The package manager to use ('npm', 'yarn', 'pnpm', or 'auto' for automatic detection)
+ * @param {string?} options.cwd - The working directory to execute commands from (defaults to process.cwd())
+ *
+ * @returns {Promise<ExtensionDependenciesResult} Promise resolving to an object containing:
+ * - dependencies: Array of extension dependencies with name, version and path
+ * - packageManager: The package manager that was used
+ *
+ * @throws Error if:
+ * - Package manager cannot be detected when using 'auto'
+ * - Unsupported package manager is detected/specified (e.g. deno, bun)
+ * - Unable to parse dependency information from package manager output
+ *
+ * @remarks
+ * Supports npm, yarn, and pnpm package managers.
+ * When using npm, parses output of `npm list`
+ * When using yarn, parses output of `yarn list`
+ * When using pnpm, parses output of `pnpm list`
+ */
 export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependenciesResult> {
   const {
     packageManager: pm = "auto",
