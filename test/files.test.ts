@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { assert, describe, expect, it } from "vitest";
+import { assert, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
 import { collect, type VsixFile } from "../src/files";
 import { readProjectManifest } from "../src/manifest";

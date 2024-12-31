@@ -7,9 +7,9 @@
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
+    "outDir": "out",
     "esModuleInterop": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
-		"outDir": "out"
+    "skipLibCheck": true
   }
 }
