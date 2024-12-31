@@ -23,18 +23,18 @@ it("should collect files for a simple extension", async () => {
     {
       type: "local",
       path: "extension/package.json",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-simple-extension/package.json",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-simple-extension/package.json",
     },
     {
       type: "local",
       path: "extension/README.md",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-simple-extension/README.md",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-simple-extension/README.md",
     },
     {
       type: "local",
       path: "extension/LICENSE",
       localPath:
-        ".vitest-testdirs/vitest-collector-should-collect-files-for-a-simple-extension/LICENSE",
+        ".vitest-testdirs/vitest-files-should-collect-files-for-a-simple-extension/LICENSE",
     },
   ] satisfies VsixFile[]));
 });
@@ -64,18 +64,18 @@ it("should collect files for a extension with a different README path", async ()
     {
       type: "local",
       path: "extension/package.json",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-README-path/package.json",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-README-path/package.json",
     },
     {
       type: "local",
       path: "extension/README.md",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-README-path/README.md",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-README-path/README.md",
     },
     {
       type: "local",
       path: "extension/LICENSE",
       localPath:
-        ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-README-path/LICENSE",
+        ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-README-path/LICENSE",
     },
   ] satisfies VsixFile[]));
 
@@ -105,22 +105,22 @@ it("should collect files for a extension with a different ignore file", async ()
     {
       type: "local",
       path: "extension/package.json",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-ignore-file/package.json",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/package.json",
     },
     {
       type: "local",
       path: "extension/README.md",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-ignore-file/README.md",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/README.md",
     },
     {
       type: "local",
       path: "extension/LICENSE",
       localPath:
-        ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-ignore-file/LICENSE",
+        ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/LICENSE",
     },
     {
       type: "local",
-      localPath: ".vitest-testdirs/vitest-collector-should-collect-files-for-a-extension-with-a-different-ignore-file/src/extension.ts",
+      localPath: ".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/src/extension.ts",
       path: "extension/src/extension.ts",
     },
   ] satisfies VsixFile[]));
