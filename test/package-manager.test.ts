@@ -5,38 +5,12 @@ import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
 import { getExtensionDependencies } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
+import { hasPM, transformAbsolutePathToVitestTestdirPath } from "./utils";
 
 const execAsync = promisify(exec);
 
-async function hasNpm() {
-  try {
-    await execAsync("npm --version");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function hasYarn() {
-  try {
-    await execAsync("yarn --version");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function hasPnpm() {
-  try {
-    await execAsync("pnpm --version");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 // timeout should be 20s as npm can take a bit to install
-describe.runIf(await hasNpm())("npm", { timeout: 20000 }, () => {
+describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -116,16 +90,14 @@ describe.runIf(await hasNpm())("npm", { timeout: 20000 }, () => {
     });
 
     // prevent issues with running tests locally, as the path will be different
-    const dependenciesWithRelative = dependencies.map((dep) => {
-      return dep.path.replace(resolve(`${dir}/../../`), "").slice(1).replace(/\\/g, "/");
-    });
+    const dependenciesWithRelative = dependencies.map((dep) => transformAbsolutePathToVitestTestdirPath(dep.path));
 
     expect(packageManager).toEqual("npm");
     expect(dependenciesWithRelative).toMatchSnapshot();
   });
 });
 
-describe.runIf(await hasYarn())("yarn", { timeout: 20000 }, () => {
+describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -205,16 +177,14 @@ describe.runIf(await hasYarn())("yarn", { timeout: 20000 }, () => {
     });
 
     // prevent issues with running tests locally, as the path will be different
-    const dependenciesWithRelative = dependencies.map((dep) => {
-      return dep.path.replace(resolve(`${dir}/../../`), "").slice(1).replace(/\\/g, "/");
-    });
+    const dependenciesWithRelative = dependencies.map((dep) => transformAbsolutePathToVitestTestdirPath(dep.path));
 
     expect(packageManager).toEqual("yarn");
     expect(dependenciesWithRelative).toMatchSnapshot();
   });
 });
 
-describe.runIf(await hasPnpm())("pnpm", { timeout: 20000 }, () => {
+describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -294,9 +264,7 @@ describe.runIf(await hasPnpm())("pnpm", { timeout: 20000 }, () => {
     });
 
     // prevent issues with running tests locally, as the path will be different
-    const dependenciesWithRelative = dependencies.map((dep) => {
-      return dep.path.replace(resolve(`${dir}/../../`), "").slice(1).replace(/\\/g, "/");
-    });
+    const dependenciesWithRelative = dependencies.map((dep) => transformAbsolutePathToVitestTestdirPath(dep.path));
 
     expect(packageManager).toEqual("pnpm");
     expect(dependenciesWithRelative).toMatchSnapshot();
