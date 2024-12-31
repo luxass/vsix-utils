@@ -158,9 +158,7 @@ describe.runIf(await hasYarn())("yarn", { timeout: 20000 }, () => {
 
   it("should default to auto if package manager is not provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
-    const dir = await testdir(fsFiles, {
-      cleanup: false,
-    });
+    const dir = await testdir(fsFiles);
 
     await execAsync("yarn install", { cwd: dir });
 
