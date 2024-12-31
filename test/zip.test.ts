@@ -1,5 +1,5 @@
-import { accessSync, constants, existsSync, lstatSync } from "node:fs";
-import { readFile, stat, unlink } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
