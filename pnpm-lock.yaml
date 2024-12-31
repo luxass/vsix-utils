@@ -11,12 +11,18 @@ importers:
       fast-xml-parser:
         specifier: ^4.5.1
         version: 4.5.1
+      ignore:
+        specifier: ^7.0.0
+        version: 7.0.0
       package-manager-detector:
         specifier: ^0.2.8
         version: 0.2.8
       semver:
         specifier: ^7.6.3
         version: 7.6.3
+      tinyglobby:
+        specifier: ^0.2.10
+        version: 0.2.10
       yauzl:
         specifier: ^3.2.0
         version: 3.2.0
@@ -1428,6 +1434,10 @@ packages:
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
+    engines: {node: '>= 4'}
+
+  ignore@7.0.0:
+    resolution: {integrity: sha512-lcX8PNQygAa22u/0BysEY8VhaFRzlOkvdlKczDPnJvrkJD1EuqzEky5VYYKM2iySIuaVIDv9N190DfSreSLw2A==}
     engines: {node: '>= 4'}
 
   import-fresh@3.3.0:
@@ -3742,6 +3752,8 @@ snapshots:
   hosted-git-info@2.8.9: {}
 
   ignore@5.3.2: {}
+
+  ignore@7.0.0: {}
 
   import-fresh@3.3.0:
     dependencies:
