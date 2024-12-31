@@ -160,9 +160,9 @@ export async function writeVsix(options: WriteVsixOptions): Promise<boolean> {
   } catch (err) {
     // remove after flaky test is fixed
     console.error(err);
-    if (existsSync(packagePath)) {
-      await unlink(packagePath);
-    }
+    // if (existsSync(packagePath)) {
+    //   await unlink(packagePath);
+    // }
 
     if (err instanceof Error) {
       throw new TypeError(`failed to create package: ${err.message}`);
