@@ -43,6 +43,16 @@
         "default": "./dist/zip.cjs"
       }
     },
+    "./files": {
+      "import": {
+        "types": "./dist/files.d.ts",
+        "default": "./dist/files.mjs"
+      },
+      "require": {
+        "types": "./dist/files.d.cts",
+        "default": "./dist/files.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
