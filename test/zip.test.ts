@@ -1,4 +1,4 @@
-import { accessSync, constants, existsSync } from "node:fs";
+import { accessSync, constants, existsSync, lstatSync } from "node:fs";
 import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -142,6 +142,9 @@ describe("write vsix", () => {
     try {
       accessSync(path, constants.W_OK);
       existsSync(join(path, "pkg.vsix"));
+      console.error("BEFORE LSTAT SYNC");
+      lstatSync(join(path, "pkg.vsix"));
+      console.error("AFTER LSTAT SYNC");
     } catch (err) {
       console.error("TRY CATCH", err);
     }
