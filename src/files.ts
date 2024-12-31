@@ -303,7 +303,8 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
       flatten(dep);
     }
   } else if (packageManager === "pnpm") {
-    const { stdout } = await execAsync("pnpm list --production --json --depth=99999 --loglevel=error", { cwd });
+    // use --ignore-workspace to avoid always including the workspace packages
+    const { stdout } = await execAsync("pnpm list --production --json --depth=99999 --loglevel=error --ignore-workspace", { cwd });
 
     let entryList = [];
     try {

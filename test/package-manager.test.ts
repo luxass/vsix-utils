@@ -218,7 +218,7 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("pnpm install", { cwd: dir });
+    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const { manifest } = await readProjectManifest(dir);
 
@@ -235,7 +235,7 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("pnpm install", { cwd: dir });
+    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const { manifest } = await readProjectManifest(dir);
 
@@ -251,9 +251,11 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
 
   it("should handle dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/with-dependencies");
-    const dir = await testdir(fsFiles);
+    const dir = await testdir(fsFiles, {
+      cleanup: false,
+    });
 
-    await execAsync("pnpm install", { cwd: dir });
+    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const { manifest } = await readProjectManifest(dir);
 
