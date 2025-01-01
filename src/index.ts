@@ -6,6 +6,7 @@
 
 export type {
   CollectOptions,
+  ContentTypeResult,
   ExtensionDependenciesOptions,
   ExtensionDependenciesResult,
   ExtensionDependency,
@@ -15,6 +16,7 @@ export type {
 } from "./files";
 export {
   collect,
+  getContentTypesForFiles,
   getExtensionDependencies,
   isInMemoryFile,
   isLocalFile,
