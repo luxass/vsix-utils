@@ -4,7 +4,7 @@
  *
  * @example
  * ```ts
- * import { readProjectManifest } from "vsix-utils/manifest";
+ * import { readProjectManifest } from "vsix-utils";
  *
  * const projectManifest = await readProjectManifest('/path/to/project');
  *
