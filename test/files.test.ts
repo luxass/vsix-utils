@@ -10,7 +10,13 @@ it("should collect files for a simple extension", async () => {
   const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension");
   const path = await testdir(testdirFiles);
 
-  const { manifest } = await readProjectManifest(path);
+  const projectManifest = await readProjectManifest(path);
+
+  if (projectManifest == null) {
+    expect.fail("project manifest is null");
+  }
+
+  const { manifest } = projectManifest;
 
   const files = await collect(manifest, {
     cwd: path,
@@ -47,7 +53,13 @@ it("should collect files for a extension with a different README path", async ()
 
   const path = await testdir(testdirFiles);
 
-  const { manifest } = await readProjectManifest(path);
+  const projectManifest = await readProjectManifest(path);
+
+  if (projectManifest == null) {
+    expect.fail("project manifest is null");
+  }
+
+  const { manifest } = projectManifest;
 
   const files = await collect(manifest, {
     cwd: path,
@@ -89,7 +101,13 @@ it("should collect files for a extension with a different ignore file", async ()
 
   const path = await testdir(testdirFiles);
 
-  const { manifest } = await readProjectManifest(path);
+  const projectManifest = await readProjectManifest(path);
+
+  if (projectManifest == null) {
+    expect.fail("project manifest is null");
+  }
+
+  const { manifest } = projectManifest;
 
   const files = await collect(manifest, {
     cwd: path,

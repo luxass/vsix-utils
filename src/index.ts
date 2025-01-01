@@ -1,20 +1,38 @@
 /**
- * This module contains utility functions for handling files.
  * @module
+ *
+ * This module contains utility functions for handling files.
  */
 
 export type {
+  CollectOptions,
+  ExtensionDependenciesOptions,
+  ExtensionDependenciesResult,
+  ExtensionDependency,
   VsixFile,
   VsixInMemoryFile,
   VsixLocalFile,
 } from "./files";
 export {
+  collect,
+  getExtensionDependencies,
   isInMemoryFile,
   isLocalFile,
 } from "./files";
 
-export type { Manifest } from "./types";
+export type {
+  ManifestAsset,
+  ManifestAssetType,
+  ProjectManifest,
+  VsixManifestOptions,
+} from "./manifest";
 
+export {
+  createVsixManifest,
+  readProjectManifest,
+  transformExtensionKind,
+} from "./manifest";
+export type { Manifest, PackageManager } from "./types";
 export type { ManifestValidation } from "./validation";
 export {
   ALLOWED_SPONSOR_PROTOCOLS,

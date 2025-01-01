@@ -14,7 +14,13 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     await expect(getExtensionDependencies(manifest, {
       cwd: dir,
@@ -32,7 +38,13 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     await expect(getExtensionDependencies(manifest, {
       cwd: dir,
@@ -46,7 +58,13 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
 
     await execAsync("npm install", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -63,7 +81,13 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
 
     await execAsync("npm install", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -81,7 +105,13 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
 
     await execAsync("npm install", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -101,7 +131,13 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     await expect(getExtensionDependencies(manifest, {
       cwd: dir,
@@ -119,7 +155,13 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     await expect(getExtensionDependencies(manifest, {
       cwd: dir,
@@ -133,7 +175,13 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
 
     await execAsync("yarn install", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -150,7 +198,13 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
 
     await execAsync("yarn install", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -168,7 +222,13 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
 
     await execAsync("yarn install", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -188,7 +248,13 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     await expect(getExtensionDependencies(manifest, {
       cwd: dir,
@@ -206,7 +272,13 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     await expect(getExtensionDependencies(manifest, {
       cwd: dir,
@@ -220,7 +292,13 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
 
     await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -237,7 +315,13 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
 
     await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -257,7 +341,13 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
 
     await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
-    const { manifest } = await readProjectManifest(dir);
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,

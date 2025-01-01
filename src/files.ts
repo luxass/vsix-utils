@@ -181,7 +181,7 @@ interface YarnTreeNode {
   children: YarnTreeNode[];
 }
 
-export interface YarnDependency {
+interface YarnDependency {
   name: string;
   path: string;
   version: string;
