@@ -1,10 +1,5 @@
 export type PackageManager = "npm" | "yarn" | "pnpm" | "auto";
 
-export interface ManifestAsset {
-  type: string;
-  path: string;
-}
-
 export interface Person {
   name: string;
   url?: string;

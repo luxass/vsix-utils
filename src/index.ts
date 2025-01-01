@@ -10,6 +10,7 @@ export type {
   ExtensionDependenciesOptions,
   ExtensionDependenciesResult,
   ExtensionDependency,
+  ProcessedFiles,
   VsixFile,
   VsixInMemoryFile,
   VsixLocalFile,
@@ -20,6 +21,7 @@ export {
   getExtensionDependencies,
   isInMemoryFile,
   isLocalFile,
+  processFiles,
 } from "./files";
 
 export type {

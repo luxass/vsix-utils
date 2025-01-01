@@ -4,6 +4,7 @@
  */
 
 import type { Buffer } from "node:buffer";
+import type { ManifestAsset } from "./manifest";
 import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -492,4 +493,75 @@ export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
     file,
     contentTypes,
   };
+}
+
+export interface ProcessedFiles {
+  /**
+   * The assets to include in the manifest.
+   *
+   * NOTE:
+   * These assets are not the extension file, but other files like changelog, readme, license, etc.
+   */
+  assets: ManifestAsset[];
+
+  /**
+   * The icon file path.
+   */
+  icon?: string;
+
+  /**
+   * The license file path.
+   */
+  license?: string;
+}
+
+export async function processFiles(files: VsixFile[]): Promise<ProcessedFiles> {
+  const assets: ManifestAsset[] = [];
+  let license: string | undefined;
+
+  const hasLicenseFile = hasExtensionFile(files, ["LICENSE", "LICENSE.md", "LICENSE.txt", "LICENSE.markdown"]);
+
+  if (hasLicenseFile.found) {
+    if (hasLicenseFile.path?.endsWith("LICENSE")) {
+      const entryIndex = files.findIndex((f) => f.path === hasLicenseFile.path);
+
+      if (entryIndex === -1) {
+        throw new Error(`could not find license file: ${hasLicenseFile.path}`);
+      }
+
+      const entry = files[entryIndex!]!;
+
+      files[entryIndex!] = {
+        ...entry,
+        path: `${hasLicenseFile.path}.md`,
+      };
+
+      hasLicenseFile.path = files[entryIndex!]!.path;
+    }
+
+    license = hasLicenseFile.path;
+
+    assets.push({
+      type: "Microsoft.VisualStudio.Services.Content.License",
+      path: license!,
+    });
+  }
+
+  return {
+    assets,
+    icon: undefined,
+    license,
+  };
+}
+
+function hasExtensionFile(files: VsixFile[], fileNames: string[]): { found: boolean; path: string | undefined } {
+  for (const fileName of fileNames) {
+    const file = files.find((f) => f.path.endsWith(fileName));
+
+    if (file) {
+      return { found: true, path: file.path };
+    }
+  }
+
+  return { found: false, path: undefined };
 }
