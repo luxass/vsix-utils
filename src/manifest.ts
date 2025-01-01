@@ -1,6 +1,7 @@
 /**
- * This module contains utility functions for manifests.
  * @module manifest
+ *
+ * This module contains utility functions for manifests.
  *
  * @example
  * ```ts
@@ -23,8 +24,18 @@ import type { Manifest } from "./types";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+/**
+ * Represents the project manifest.
+ */
 export interface ProjectManifest {
+  /**
+   * The file name of the project manifest.
+   */
   fileName: string;
+
+  /**
+   * The parsed content of the project manifest.
+   */
   manifest: Manifest;
 }
 
@@ -32,7 +43,7 @@ export interface ProjectManifest {
  * Reads the project manifest (package.json) from the specified project directory.
  *
  * @param {string} projectDir - The directory of the project where the package.json is located.
- * @returns {Promise<ProjectManifest | null>} A promise that resolves to an object containing the file name and the parsed manifest.
+ * @returns {Promise<ProjectManifest | null>} A promise that resolves to an object containing the file name and the parsed manifest content, or null if the manifest could not be read.
  *
  * @example
  * ```ts
