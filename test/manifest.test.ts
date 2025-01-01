@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { testdir } from "vitest-testdirs";
 import { readProjectManifest, transformExtensionKind } from "../src/manifest";
@@ -12,7 +13,7 @@ describe("read project manifest", () => {
     const result = await readProjectManifest(path);
 
     expect(result).toEqual({
-      fileName: `${path}/package.json`,
+      fileName: join(path, "package.json"),
       manifest: { name: "test-project", version: "1.0.0" },
     });
   });
