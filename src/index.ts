@@ -5,11 +5,17 @@
  */
 
 export type {
+  CollectOptions,
+  ExtensionDependenciesOptions,
+  ExtensionDependenciesResult,
+  ExtensionDependency,
   VsixFile,
   VsixInMemoryFile,
   VsixLocalFile,
 } from "./files";
 export {
+  collect,
+  getExtensionDependencies,
   isInMemoryFile,
   isLocalFile,
 } from "./files";
