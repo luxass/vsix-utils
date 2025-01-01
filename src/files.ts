@@ -12,6 +12,7 @@ import path, { isAbsolute, join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import ignore from "ignore";
+import mime from "mime";
 import { glob } from "tinyglobby";
 import { VSCE_DEFAULT_IGNORE } from "./constants";
 
@@ -406,5 +407,79 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
   return {
     dependencies: Array.from(dependencies),
     packageManager,
+  };
+}
+
+const DEFAULT_MIME_TYPES = new Map<string, string>([
+  [".json", "application/json"],
+  [".vsixmanifest", "text/xml"],
+]);
+
+export interface ContentTypeResult {
+  /**
+   * The Content Types as a map of file extensions to content types.
+   */
+  contentTypes: Record<string, string>;
+
+  /**
+   * The Content Types as an XML string.
+   *
+   * NOTE:
+   * Used inside the VSIX package to define the content types of the files.
+   */
+  file: string;
+}
+
+/**
+ * Generates content types mapping and XML representation for VSIX files
+ * @param {VsixFile[]} files - Array of VSIX files to process
+ * @returns {ContentTypeResult} Object containing:
+ *  - file: XML string representation of content types
+ *  - contentTypes: Record mapping file extensions to their content types
+ * @throws {Error} When content type cannot be determined for a file
+ * @example
+ * ```ts
+ * import { getContentTypesForFiles } from "vsix-utils/files";
+ *
+ * const files = [
+ *   { type: "local", path: "extension/package.json", localPath: "/path/to/extension/package.json" },
+ *   { type: "local", path: "extension/README.md", localPath: "/path/to/extension/README.md" },
+ *   { type: "local", path: "extension/LICENSE", localPath: "/path/to/extension/LICENSE" },
+ *   { type: "local", path: "extension/dist/extension.js", localPath: "/path/to/extension/dist/extension.js" },
+ * ];
+ *
+ * const { file, contentTypes } = getContentTypesForFiles(files);
+ * ```
+ */
+export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
+  const contentTypes: Record<string, string> = {};
+  for (const file of files) {
+    const ext = path.extname(file.path).toLowerCase();
+
+    if (ext == null) continue;
+
+    if (!DEFAULT_MIME_TYPES.has(ext)) {
+      // if default mime types doesn't contain ext, lookup the mime type
+      const contentType = mime.getType(ext);
+
+      if (contentType == null) {
+        throw new Error(`could not determine content type for file: ${file.path}`);
+      }
+
+      contentTypes[ext] = contentType;
+    } else {
+      contentTypes[ext] = DEFAULT_MIME_TYPES.get(ext)!;
+    }
+  }
+
+  const file = /* xml */`<?xml version="1.0" encoding="utf-8"?>
+            <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+              ${Object.entries(contentTypes).map(([ext, contentType]) => `<Default Extension="${ext}" ContentType="${contentType}" />\n`).join("")}
+             </Types>
+          `;
+
+  return {
+    file,
+    contentTypes,
   };
 }

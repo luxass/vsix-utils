@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { join, normalize } from "node:path";
 
-import { assert, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
-import { collect, type VsixFile } from "../src/files";
+import { collect, getContentTypesForFiles, type VsixFile } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 
 it("should collect files for a simple extension", async () => {
@@ -139,4 +139,64 @@ it("should collect files for a extension with a different ignore file", async ()
       localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/src/extension.ts"),
     },
   ] satisfies VsixFile[]));
+});
+
+describe("content types", () => {
+  it("should handle empty input", () => {
+    const result = getContentTypesForFiles([]);
+
+    expect(result.contentTypes).toEqual({});
+    expect(result.file).not.toContain("<Default");
+  });
+
+  it("should assign default content types for known extensions", () => {
+    const result = getContentTypesForFiles([
+      {
+        type: "local",
+        path: "file.txt",
+        localPath: "file.txt",
+      },
+      {
+        type: "local",
+        path: "file.json",
+        localPath: "file.json",
+      },
+    ]);
+
+    expect(result.contentTypes).toEqual({
+      ".txt": "text/plain",
+      ".json": "application/json",
+    });
+
+    expect(result.file).toContain("<Default Extension=\".txt\" ContentType=\"text/plain\" />");
+    expect(result.file).toContain("<Default Extension=\".json\" ContentType=\"application/json\" />");
+  });
+
+  it("should lookup content types for unknown extensions", () => {
+    const result = getContentTypesForFiles([
+      {
+        type: "local",
+        path: "file.jade",
+        localPath: "file.jade",
+      },
+    ]);
+
+    expect(result.contentTypes).toEqual({
+      ".jade": "text/jade",
+    });
+
+    expect(result.file).toContain("<Default Extension=\".jade\" ContentType=\"text/jade\" />");
+  });
+
+  it("should throw an error for unknown extensions that cannot be resolved", () => {
+    expect(() => getContentTypesForFiles([
+      {
+        type: "local",
+        localPath: "file.unknown",
+        path: "file.unknown",
+      },
+    ])).toThrow(
+      "could not determine content type for file: file.unknown",
+    );
+  });
 });
