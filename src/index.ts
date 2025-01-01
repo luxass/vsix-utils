@@ -13,8 +13,12 @@ export {
   isLocalFile,
 } from "./files";
 
-export type { Manifest } from "./types";
+export type { ProjectManifest } from "./manifest";
 
+export {
+  readProjectManifest,
+} from "./manifest";
+export type { Manifest } from "./types";
 export type { ManifestValidation } from "./validation";
 export {
   ALLOWED_SPONSOR_PROTOCOLS,
