@@ -14,10 +14,17 @@ export {
   isLocalFile,
 } from "./files";
 
-export type { ProjectManifest } from "./manifest";
+export type {
+  ManifestAsset,
+  ManifestAssetType,
+  ProjectManifest,
+  VsixManifestOptions,
+} from "./manifest";
 
 export {
+  createVsixManifest,
   readProjectManifest,
+  transformExtensionKind,
 } from "./manifest";
 export type { Manifest } from "./types";
 export type { ManifestValidation } from "./validation";

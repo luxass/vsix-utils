@@ -94,7 +94,7 @@ export interface Manifest {
   enableProposedApi?: boolean;
   enabledApiProposals?: readonly string[];
   qna?: "marketplace" | string | false;
-  extensionKind?: ExtensionKind[];
+  extensionKind?: ExtensionKind[] | ExtensionKind;
   sponsor?: { url: string };
 
   // optional (npm)
