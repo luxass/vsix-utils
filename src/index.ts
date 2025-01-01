@@ -1,6 +1,7 @@
 /**
- * This module contains utility functions for handling files.
  * @module
+ *
+ * This module contains utility functions for handling files.
  */
 
 export type {
