@@ -410,9 +410,19 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
   };
 }
 
+// taken from https://github.com/microsoft/vscode-vsce/blob/06951d9f03b90947df6d5ad7d9113f529321df20/src/package.ts#L1581-L1584
+// added more default mime types to speed up the process
 const DEFAULT_MIME_TYPES = new Map<string, string>([
   [".json", "application/json"],
   [".vsixmanifest", "text/xml"],
+  [".md", "text/markdown"],
+  [".png", "image/png"],
+  [".txt", "text/plain"],
+  [".js", "application/javascript"],
+  [".yml", "text/yaml"],
+  [".html", "text/html"],
+  [".markdown", "text/markdown"],
+  [".css", "text/css"],
 ]);
 
 export interface ContentTypeResult {
