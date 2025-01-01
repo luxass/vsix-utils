@@ -31,6 +31,8 @@ export type {
 
 export {
   createVsixManifest,
+  getManifestTags,
+  isWebKind,
   readProjectManifest,
   transformExtensionKind,
 } from "./manifest";

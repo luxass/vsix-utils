@@ -368,3 +368,75 @@ export function transformExtensionKind(manifest: Manifest): ExtensionKind[] {
 
   return result;
 }
+
+/**
+ * Checks if an extension manifest includes web as a supported platform.
+ * @param {Manifest} manifest - The extension manifest to check
+ * @returns True if the extension supports web platform, false otherwise
+ */
+export function isWebKind(manifest: Manifest): boolean {
+  return transformExtensionKind(manifest).includes("web");
+}
+
+/**
+ * Extracts and generates an array of tags from a VS Code extension manifest.
+ *
+ * @param {Manifest} manifest - The VS Code extension manifest object
+ * @returns {string[]} An array of unique strings representing tags for the extension
+ */
+export function getManifestTags(manifest: Manifest): string[] {
+  const { contributes = {}, activationEvents = [], keywords = [] } = manifest;
+  const tags = new Set<string>(keywords);
+
+  const doesContribute = (obj: any, ...properties: string[]): boolean => {
+    return properties.every((property) => obj && (obj = obj[property]) && obj.length > 0);
+  };
+
+  if (doesContribute(contributes, "themes")) tags.add("theme").add("color-theme");
+  if (doesContribute(contributes, "iconThemes")) tags.add("theme").add("icon-theme");
+  if (doesContribute(contributes, "productIconThemes")) tags.add("theme").add("product-icon-theme");
+  if (doesContribute(contributes, "snippets")) tags.add("snippet");
+  if (doesContribute(contributes, "keybindings")) tags.add("keybindings");
+  if (doesContribute(contributes, "debuggers")) tags.add("debuggers");
+  if (doesContribute(contributes, "jsonValidation")) tags.add("json");
+  if (doesContribute(contributes, "menus", "statusBar/remoteIndicator")) tags.add("remote-menu");
+  if (doesContribute(contributes, "chatParticipants")) tags.add("chat-participant").add("github-copilot");
+
+  for (const localization of contributes.localizations ?? []) {
+    tags.add(`lp-${localization.languageId}`);
+    for (const { id } of localization.translations ?? []) {
+      tags.add(`__lp_${id}`).add(`__lp-${localization.languageId}_${id}`);
+    }
+  }
+
+  for (const language of contributes.languages ?? []) {
+    tags.add(language.id);
+    for (const alias of language.aliases ?? []) {
+      tags.add(alias);
+    }
+    for (const ext of language.extensions ?? []) {
+      const cleanedExt = ext.replace(/\W/g, "");
+      if (cleanedExt) tags.add(`__ext_${cleanedExt}`);
+    }
+  }
+
+  for (const event of activationEvents) {
+    if (!event.startsWith("onLanguage:")) continue;
+
+    tags.add(event.replace("onLanguage:", ""));
+  }
+
+  for (const grammar of contributes.grammars ?? []) {
+    tags.add(grammar.language);
+  }
+
+  if (isWebKind(manifest)) {
+    tags.add("__web_extension");
+  }
+
+  if (manifest.sponsor != null && manifest.sponsor.url != null) {
+    tags.add("__sponsor_extension");
+  }
+
+  return [...tags].filter(Boolean);
+}
