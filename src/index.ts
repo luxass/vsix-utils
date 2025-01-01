@@ -26,7 +26,7 @@ export {
   readProjectManifest,
   transformExtensionKind,
 } from "./manifest";
-export type { Manifest } from "./types";
+export type { Manifest, PackageManager } from "./types";
 export type { ManifestValidation } from "./validation";
 export {
   ALLOWED_SPONSOR_PROTOCOLS,
