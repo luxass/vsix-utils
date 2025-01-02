@@ -515,11 +515,13 @@ export interface ProcessedFiles {
   license?: string;
 }
 
-export async function processFiles(files: VsixFile[]): Promise<ProcessedFiles> {
+export async function processFiles(files: VsixFile[], manifest: Manifest): Promise<ProcessedFiles> {
   const assets: ManifestAsset[] = [];
   let license: string | undefined;
+  let icon: string | undefined;
 
   const hasLicenseFile = hasExtensionFile(files, ["LICENSE", "LICENSE.md", "LICENSE.txt", "LICENSE.markdown"]);
+  const hasIconFile = hasExtensionFile(files, [manifest.icon]);
 
   if (hasLicenseFile.found) {
     if (hasLicenseFile.path?.endsWith("LICENSE")) {
@@ -547,15 +549,25 @@ export async function processFiles(files: VsixFile[]): Promise<ProcessedFiles> {
     });
   }
 
+  if (hasIconFile.found) {
+    icon = hasIconFile.path;
+
+    assets.push({
+      type: "Microsoft.VisualStudio.Services.Icons.Default",
+      path: icon!,
+    });
+  }
+
   return {
     assets,
-    icon: undefined,
+    icon,
     license,
   };
 }
 
-function hasExtensionFile(files: VsixFile[], fileNames: string[]): { found: boolean; path: string | undefined } {
+function hasExtensionFile(files: VsixFile[], fileNames: (string | undefined)[]): { found: boolean; path: string | undefined } {
   for (const fileName of fileNames) {
+    if (fileName == null) continue;
     const file = files.find((f) => f.path.endsWith(fileName));
 
     if (file) {
