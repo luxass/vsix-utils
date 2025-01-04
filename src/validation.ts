@@ -5,7 +5,7 @@
 
 import type { Manifest } from "./types";
 import { satisfies, valid, validRange } from "semver";
-import { VSCE_TRUSTED_SOURCES } from "./constants";
+import { VSCE_TRUSTED_SOURCES } from "./vsce-constants";
 
 /**
  * Validates the compatibility between VS Code engine version and @types/vscode version

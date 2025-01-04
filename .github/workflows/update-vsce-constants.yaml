@@ -1,0 +1,79 @@
+name: Update VSCE Constants
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        type: boolean
+        description: Run the workflow without creating a pull request
+        required: false
+        default: false
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    if: github.repository_owner == 'luxass'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+
+      - name: setup node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: lts/*
+
+      - name: install dependencies
+        run: pnpm install
+
+      - name: fetch vsce constants
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            import fs from "node:fs";
+
+            const res = await fetch("https://raw.githubusercontent.com/luxass/cloudflare-workers/refs/heads/main/apps/vscode/src/generated-vsce-content.ts");
+
+            if (!res.ok) {
+              throw new Error(`failed to fetch VSCE constants: ${res.statusText}`);
+            }
+
+            const content = await res.text();
+
+            if (content == null || content.trim() === "") {
+              throw new Error("empty VSCE constants");
+            }
+
+            fs.writeFileSync("src/vsce-constants.ts", content);
+
+      - name: format vsce constants
+        run: pnpm eslint ./src/vsce-constants.ts --fix
+
+      - name: create pull request
+        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7.0.5
+        if: ${{ github.event.inputs.dry-run != 'true' }}
+        with:
+          commit-message: "feat: updated vsce constants"
+          title: "feat: updated vsce constants"
+          body: |
+            I found some new changes in constants inside `@vscode/vsce`.
+
+            I don't know what they changed, but I'm sure it's important.
+            If you want you can go take a look yourself.
+
+            I will be waiting for your approval 👋.
+
+            This is an automated PR to update the constants from the VSCE package.
+          branch: update-vsce-constants
+          add-paths: src/vsce-constants.ts
+          base: main
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          reviewers: luxass

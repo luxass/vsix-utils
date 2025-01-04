@@ -15,7 +15,7 @@ import { promisify } from "node:util";
 import ignore from "ignore";
 import mime from "mime";
 import { glob } from "tinyglobby";
-import { VSCE_DEFAULT_IGNORE } from "./constants";
+import { VSCE_DEFAULT_IGNORE } from "./vsce-constants";
 
 const execAsync = promisify(exec);
 
