@@ -8,8 +8,10 @@ import { hasPM, transformAbsolutePathToVitestTestdirPath } from "./utils";
 
 const execAsync = promisify(exec);
 
+const PM_TIMEOUT = 40_000; // 40s
+
 // timeout should be 20s as npm can take a bit to install
-describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
+describe.runIf(await hasPM("npm"))("npm", { timeout: PM_TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -126,7 +128,7 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: 20000 }, () => {
   });
 });
 
-describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
+describe.runIf(await hasPM("yarn"))("yarn", { timeout: PM_TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -243,7 +245,7 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: 20000 }, () => {
   });
 });
 
-describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
+describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: PM_TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
