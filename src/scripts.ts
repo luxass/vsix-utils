@@ -1,8 +1,5 @@
 import type { Manifest, PackageManager } from "./types";
-import { spawn } from "node:child_process";
-import { promisify } from "node:util";
-
-const spawnAsync = promisify(spawn);
+import { exec } from "node:child_process";
 
 export interface PrepublishOptions {
   /**
@@ -26,6 +23,22 @@ export interface PrepublishOptions {
   preRelease: boolean;
 }
 
+/**
+ * Executes the publish related scripts in a VS Code extension package.json.
+ *
+ * The function will run the following scripts in order if they exist:
+ * - `vscode:prepublish`
+ * - `vscode:prepublish:release` (only if not a pre-release)
+ * - `vscode:prepublish:prerelease` (only if pre-release)
+ *
+ * @param {PrepublishOptions} options - The options for the prepublish command
+ * @param {string} options.cwd - The current working directory
+ * @param {Exclude<PackageManager, "auto">} options.packageManager - The package manager to use (npm, yarn, pnpm)
+ * @param {Manifest} options.manifest - The package.json manifest object
+ * @param {boolean} options.preRelease - Whether this is a pre-release build
+ *
+ * @returns {Promise<void>} A promise that resolves when all scripts have been executed
+ */
 export async function prepublish(options: PrepublishOptions): Promise<void> {
   const { cwd, packageManager, manifest, preRelease } = options;
 
@@ -50,12 +63,16 @@ export async function prepublish(options: PrepublishOptions): Promise<void> {
     return;
   }
 
-  for (const script of scripts) {
-    await runScript({ cwd, packageManager, script });
+  const results = await Promise.all(
+    scripts.map((script) => runScript({ cwd, packageManager, script })),
+  );
+
+  if (results.some((result) => !result)) {
+    throw new Error("failed to run one or more scripts");
   }
 }
 
-export interface RunScriptOptions {
+interface RunScriptOptions {
   /**
    * The current working directory.
    */
@@ -72,12 +89,25 @@ export interface RunScriptOptions {
   script: string;
 }
 
-export async function runScript(options: RunScriptOptions): Promise<void> {
+async function runScript(options: RunScriptOptions): Promise<boolean> {
   const { cwd, packageManager, script } = options;
+  try {
+    const { stderr } = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+      exec(`${packageManager} run ${script}`, { cwd }, (err, stdout, stderr) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ stdout, stderr });
+        }
+      });
+    });
 
-  await spawnAsync(packageManager, ["run", script], {
-    cwd,
-    shell: true,
-    stdio: "inherit",
-  });
+    if (stderr.trim() !== "") {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
 }
