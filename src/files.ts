@@ -9,7 +9,7 @@ import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import path, { isAbsolute, join, resolve } from "node:path";
+import path, { extname, isAbsolute, join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 import ignore from "ignore";
@@ -515,16 +515,39 @@ export interface ProcessedFiles {
   license?: string;
 }
 
-export async function processFiles(files: VsixFile[], manifest: Manifest): Promise<ProcessedFiles> {
+export interface ProcessFileOptions {
+  /**
+   * The manifest object containing package details.
+   */
+  manifest: Manifest;
+
+  /**
+   * Files to process.
+   */
+  files: VsixFile[];
+
+  /**
+   * README file path
+   */
+  readme?: string;
+}
+
+export async function processFiles(options: ProcessFileOptions): Promise<ProcessedFiles> {
+  const { manifest, files, readme } = options;
+
   const assets: ManifestAsset[] = [];
   let license: string | undefined;
   let icon: string | undefined;
 
   const hasLicenseFile = hasExtensionFile(files, ["LICENSE", "LICENSE.md", "LICENSE.txt", "LICENSE.markdown"]);
   const hasIconFile = hasExtensionFile(files, [manifest.icon]);
+  // TODO: use default readme file names
+  const hasReadmeFile = hasExtensionFile(files, [readme, "README.md"]);
+  const hasChangelogFile = hasExtensionFile(files, ["CHANGELOG.md", "CHANGELOG.markdown", "CHANGELOG.txt"]);
+  const hasTranslationsFiles = hasExtensionFile(files, ["package.nls.json"]);
 
   if (hasLicenseFile.found) {
-    if (hasLicenseFile.path?.endsWith("LICENSE")) {
+    if (!extname(hasLicenseFile.path!)) {
       const entryIndex = files.findIndex((f) => f.path === hasLicenseFile.path);
 
       if (entryIndex === -1) {
@@ -555,6 +578,27 @@ export async function processFiles(files: VsixFile[], manifest: Manifest): Promi
     assets.push({
       type: "Microsoft.VisualStudio.Services.Icons.Default",
       path: icon!,
+    });
+  }
+
+  if (hasReadmeFile.found) {
+    assets.push({
+      type: "Microsoft.VisualStudio.Services.Content.Details",
+      path: hasReadmeFile.path!,
+    });
+  }
+
+  if (hasChangelogFile.found) {
+    assets.push({
+      type: "Microsoft.VisualStudio.Services.Content.Changelog",
+      path: hasChangelogFile.path!,
+    });
+  }
+
+  if (hasTranslationsFiles.found) {
+    assets.push({
+      type: "Microsoft.VisualStudio.Code.Translation.en",
+      path: hasTranslationsFiles.path!,
     });
   }
 
