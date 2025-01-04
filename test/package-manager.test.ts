@@ -335,9 +335,7 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: 20000 }, () => {
 
   it("should handle dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/with-dependencies");
-    const dir = await testdir(fsFiles, {
-      cleanup: false,
-    });
+    const dir = await testdir(fsFiles);
 
     await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
