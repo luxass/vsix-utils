@@ -1,17 +1,10 @@
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
 import { getExtensionDependencies } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 import { hasPM, transformAbsolutePathToVitestTestdirPath } from "./utils";
 
-const execAsync = promisify(exec);
-
-const PM_TIMEOUT = 40_000; // 40s
-
-// timeout should be 20s as npm can take a bit to install
-describe.runIf(await hasPM("npm"))("npm", { timeout: PM_TIMEOUT }, () => {
+describe.runIf(await hasPM("npm"))("npm", () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -58,8 +51,6 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: PM_TIMEOUT }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("npm install", { cwd: dir });
-
     const projectManifest = await readProjectManifest(dir);
 
     if (projectManifest == null) {
@@ -80,8 +71,6 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: PM_TIMEOUT }, () => {
   it("should handle no dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
     const dir = await testdir(fsFiles);
-
-    await execAsync("npm install", { cwd: dir });
 
     const projectManifest = await readProjectManifest(dir);
 
@@ -105,8 +94,6 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: PM_TIMEOUT }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/with-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("npm install", { cwd: dir });
-
     const projectManifest = await readProjectManifest(dir);
 
     if (projectManifest == null) {
@@ -128,7 +115,7 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: PM_TIMEOUT }, () => {
   });
 });
 
-describe.runIf(await hasPM("yarn"))("yarn", { timeout: PM_TIMEOUT }, () => {
+describe.runIf(await hasPM("yarn"))("yarn", () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -175,8 +162,6 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: PM_TIMEOUT }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("yarn install", { cwd: dir });
-
     const projectManifest = await readProjectManifest(dir);
 
     if (projectManifest == null) {
@@ -197,8 +182,6 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: PM_TIMEOUT }, () => {
   it("should handle no dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
     const dir = await testdir(fsFiles);
-
-    await execAsync("yarn install", { cwd: dir });
 
     const projectManifest = await readProjectManifest(dir);
 
@@ -222,8 +205,6 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: PM_TIMEOUT }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/with-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("yarn install", { cwd: dir });
-
     const projectManifest = await readProjectManifest(dir);
 
     if (projectManifest == null) {
@@ -245,7 +226,7 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: PM_TIMEOUT }, () => {
   });
 });
 
-describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: PM_TIMEOUT }, () => {
+describe.runIf(await hasPM("pnpm"))("pnpm", () => {
   it("should throw an error if unsupported package manager is provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
@@ -292,8 +273,6 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: PM_TIMEOUT }, () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
 
-    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
-
     const projectManifest = await readProjectManifest(dir);
 
     if (projectManifest == null) {
@@ -314,8 +293,6 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: PM_TIMEOUT }, () => {
   it("should handle no dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
     const dir = await testdir(fsFiles);
-
-    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const projectManifest = await readProjectManifest(dir);
 
@@ -338,8 +315,6 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: PM_TIMEOUT }, () => {
   it("should handle dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/with-dependencies");
     const dir = await testdir(fsFiles);
-
-    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const projectManifest = await readProjectManifest(dir);
 
