@@ -8,7 +8,6 @@ export type {
   CollectOptions,
   ContentTypeResult,
   ExtensionDependenciesOptions,
-  ExtensionDependenciesResult,
   ExtensionDependency,
   ProcessedFiles,
   VsixFile,

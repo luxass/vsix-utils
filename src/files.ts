@@ -164,9 +164,8 @@ export async function getExtensionPackageManager(cwd: string): Promise<PackageMa
 export interface ExtensionDependenciesOptions {
   /**
    * The package manager to use.
-   * @default "auto"
    */
-  packageManager?: PackageManagerWithAuto;
+  packageManager: PackageManager;
 
   /**
    * The current working directory
@@ -190,18 +189,6 @@ export interface ExtensionDependency {
    * The path to the dependency.
    */
   path: string;
-}
-
-export interface ExtensionDependenciesResult {
-  /**
-   * The dependencies of the extension.
-   */
-  dependencies: ExtensionDependency[];
-
-  /**
-   * The package manager used to resolve the dependencies.
-   */
-  packageManager: PackageManager | null;
 }
 
 interface PnpmDependency {
@@ -229,8 +216,6 @@ interface YarnDependency {
  *
  * @param {Manifest} manifest - The extension's manifest object containing dependency information
  * @param {ExtensionDependenciesOptions} options - Configuration options for retrieving dependencies
- * @param {PackageManager?} options.packageManager - The package manager to use ('npm', 'yarn', 'pnpm', or 'auto' for automatic detection)
- * @param {string?} options.cwd - The working directory to execute commands from (defaults to process.cwd())
  *
  * @returns {Promise<ExtensionDependenciesResult} Promise resolving to an object containing:
  * - dependencies: Array of extension dependencies with name, version and path
@@ -247,31 +232,11 @@ interface YarnDependency {
  * When using yarn, parses output of `yarn list`
  * When using pnpm, parses output of `pnpm list`
  */
-export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependenciesResult> {
+export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependency[]> {
   const {
-    packageManager: pm = "auto",
+    packageManager,
     cwd = process.cwd(),
   } = options;
-
-  let packageManager: PackageManager | null = null;
-
-  if (pm === "auto") {
-    const detect = await import("package-manager-detector/detect").then((m) => m.detect);
-
-    const result = await detect({ cwd });
-
-    if (result == null) {
-      throw new Error("could not detect package manager");
-    }
-
-    if (result.name === "deno" || result.name === "bun") {
-      throw new Error(`unsupported package manager: ${result.name}`);
-    }
-
-    packageManager = result.name;
-  } else {
-    packageManager = pm;
-  }
 
   const dependencies = new Set<ExtensionDependency>();
 
@@ -308,10 +273,7 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     const trees = JSON.parse(match[0]).data.trees as YarnTreeNode[];
 
     if (!Array.isArray(trees) || trees.length === 0) {
-      return {
-        dependencies: [],
-        packageManager,
-      };
+      return [];
     }
 
     const prune = true; // TODO: using packaged dependencies
@@ -384,17 +346,11 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     try {
       entryList = JSON.parse(stdout);
     } catch {
-      return {
-        dependencies: [],
-        packageManager,
-      };
+      return [];
     }
 
     if (!Array.isArray(entryList) || entryList.length === 0) {
-      return {
-        dependencies: [],
-        packageManager,
-      };
+      return [];
     }
 
     const entry = entryList[0] as {
@@ -402,10 +358,7 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     };
 
     if (entry == null || typeof entry !== "object" || entry.dependencies == null || typeof entry.dependencies !== "object") {
-      return {
-        dependencies: [],
-        packageManager,
-      };
+      return [];
     }
 
     const internalDeps = new Set<string>();
@@ -436,10 +389,7 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     throw new Error(`unsupported package manager: ${packageManager}`);
   }
 
-  return {
-    dependencies: Array.from(dependencies),
-    packageManager,
-  };
+  return Array.from(dependencies);
 }
 
 // taken from https://github.com/microsoft/vscode-vsce/blob/06951d9f03b90947df6d5ad7d9113f529321df20/src/package.ts#L1581-L1584
