@@ -4,7 +4,7 @@ import { join, normalize } from "node:path";
 import { promisify } from "node:util";
 import { assert, describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
-import { collect, getContentTypesForFiles, getExtensionDependencies, isInMemoryFile, isLocalFile, type VsixFile } from "../src/files";
+import { collect, getContentTypesForFiles, getExtensionDependencies, type VsixFile } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 
 const execAsync = promisify(exec);
