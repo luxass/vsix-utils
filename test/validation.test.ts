@@ -356,6 +356,7 @@ describe("validate manifests", () => {
     it("should catch invalid pricing", async () => {
       const result = await validateProjectManifest(
         createManifest({
+          // @ts-expect-error invalid pricing is used for testing
           pricing: "Paid",
         }),
       );
