@@ -289,12 +289,11 @@ describe("collect files", () => {
       cwd: dir,
     });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "auto",
+      packageManager: "pnpm",
     });
 
-    expect(packageManager).toBe("pnpm");
     expect(dependencies.length).toBeGreaterThan(0);
 
     const files = await collect(manifest, {

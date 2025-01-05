@@ -81,31 +81,6 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: TIMEOUT }, () => {
     })).rejects.toThrow("unsupported package manager: custom");
   });
 
-  // TODO: currently the package manager detect is traversing up the directory
-  //       and therefor will locate the package.json in the root of the project
-  //       instead of stopping at the test directory. So this test will fail until
-  //       we have a otion to stop the traversing.
-  //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
-  it.todo("should throw an error if package is auto and can't be detected", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
-      ignore: ["node_modules"],
-    });
-    const dir = await testdir(fsFiles);
-
-    const projectManifest = await readProjectManifest(dir);
-
-    if (projectManifest == null) {
-      expect.fail("project manifest is null");
-    }
-
-    const { manifest } = projectManifest;
-
-    await expect(getExtensionDependencies(manifest, {
-      cwd: dir,
-      packageManager: "auto",
-    })).rejects.toThrow("unable to detect package manager");
-  });
-
   it("should default to auto if package manager is not provided", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
       ignore: ["node_modules"],
@@ -122,12 +97,18 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: TIMEOUT }, () => {
 
     await execAsync("npm install", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
+      packageManager,
     });
 
     expect(dependencies).toEqual([]);
-
     expect(packageManager).toEqual("npm");
   });
 
@@ -147,13 +128,18 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: TIMEOUT }, () => {
 
     await execAsync("npm install", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "npm",
+      packageManager,
     });
 
     expect(dependencies).toEqual([]);
-
     expect(packageManager).toEqual("npm");
   });
 
@@ -173,9 +159,15 @@ describe.runIf(await hasPM("npm"))("npm", { timeout: TIMEOUT }, () => {
 
     await execAsync("npm install", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "npm",
+      packageManager,
     });
 
     // prevent issues with running tests in ci and locally, as the path will be different
@@ -211,56 +203,6 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: TIMEOUT }, () => {
     })).rejects.toThrow("unsupported package manager: custom");
   });
 
-  // TODO: currently the package manager detect is traversing up the directory
-  //       and therefor will locate the package.json in the root of the project
-  //       instead of stopping at the test directory. So this test will fail until
-  //       we have a otion to stop the traversing.
-  //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
-  it.todo("should throw an error if package is auto and can't be detected", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
-      ignore: ["node_modules"],
-    });
-    const dir = await testdir(fsFiles);
-
-    const projectManifest = await readProjectManifest(dir);
-
-    if (projectManifest == null) {
-      expect.fail("project manifest is null");
-    }
-
-    const { manifest } = projectManifest;
-
-    await expect(getExtensionDependencies(manifest, {
-      cwd: dir,
-      packageManager: "auto",
-    })).rejects.toThrow("unable to detect package manager");
-  });
-
-  it("should default to auto if package manager is not provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
-      ignore: ["node_modules"],
-    });
-    const dir = await testdir(fsFiles);
-
-    const projectManifest = await readProjectManifest(dir);
-
-    if (projectManifest == null) {
-      expect.fail("project manifest is null");
-    }
-
-    const { manifest } = projectManifest;
-
-    await execAsync("yarn install", { cwd: dir });
-
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
-      cwd: dir,
-    });
-
-    expect(dependencies).toEqual([]);
-
-    expect(packageManager).toEqual("yarn");
-  });
-
   it("should handle no dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
       ignore: ["node_modules"],
@@ -277,9 +219,15 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: TIMEOUT }, () => {
 
     await execAsync("yarn install", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "yarn",
+      packageManager,
     });
 
     expect(dependencies).toEqual([]);
@@ -303,9 +251,15 @@ describe.runIf(await hasPM("yarn"))("yarn", { timeout: TIMEOUT }, () => {
 
     await execAsync("yarn install", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "yarn",
+      packageManager,
     });
 
     // prevent issues with running tests in ci and locally, as the path will be different
@@ -341,56 +295,6 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: TIMEOUT }, () => {
     })).rejects.toThrow("unsupported package manager: custom");
   });
 
-  // TODO: currently the package manager detect is traversing up the directory
-  //       and therefor will locate the package.json in the root of the project
-  //       instead of stopping at the test directory. So this test will fail until
-  //       we have a otion to stop the traversing.
-  //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
-  it.todo("should throw an error if package is auto and can't be detected", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
-      ignore: ["node_modules"],
-    });
-    const dir = await testdir(fsFiles);
-
-    const projectManifest = await readProjectManifest(dir);
-
-    if (projectManifest == null) {
-      expect.fail("project manifest is null");
-    }
-
-    const { manifest } = projectManifest;
-
-    await expect(getExtensionDependencies(manifest, {
-      cwd: dir,
-      packageManager: "auto",
-    })).rejects.toThrow("unable to detect package manager");
-  });
-
-  it("should default to auto if package manager is not provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
-      ignore: ["node_modules"],
-    });
-    const dir = await testdir(fsFiles);
-
-    const projectManifest = await readProjectManifest(dir);
-
-    if (projectManifest == null) {
-      expect.fail("project manifest is null");
-    }
-
-    const { manifest } = projectManifest;
-
-    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
-
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
-      cwd: dir,
-    });
-
-    expect(dependencies).toEqual([]);
-
-    expect(packageManager).toEqual("pnpm");
-  });
-
   it("should handle no dependencies correctly", async () => {
     const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
       ignore: ["node_modules"],
@@ -407,9 +311,15 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: TIMEOUT }, () => {
 
     await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "pnpm",
+      packageManager,
     });
 
     expect(dependencies).toEqual([]);
@@ -433,9 +343,15 @@ describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: TIMEOUT }, () => {
 
     await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
-    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+    const packageManager = await getExtensionPackageManager(dir);
+
+    if (packageManager == null) {
+      expect.fail("package manager is null");
+    }
+
+    const dependencies = await getExtensionDependencies(manifest, {
       cwd: dir,
-      packageManager: "pnpm",
+      packageManager,
     });
 
     // prevent issues with running tests in ci and locally, as the path will be different
