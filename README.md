@@ -6,6 +6,10 @@
 
 utilities for working with vsix files
 
+> [!NOTE]
+> If you are looking for a way to create vsix files programmatically, you can use the [vsix-builder](https://github.com/luxass/vsix-builder) package, or if you just want to build with a CLI, you can use [vsix-pack](https://github.com/luxass/vsix-pack).
+> This is just the building blocks, that powers vsix-builder and vsix-pack.
+
 ## 📦 Installation
 
 ```bash
