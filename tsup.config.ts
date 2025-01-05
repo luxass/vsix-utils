@@ -5,6 +5,8 @@ export default defineConfig({
     "./src/index.ts",
     "./src/zip.ts",
     "./src/files.ts",
+    "./src/manifest.ts",
+    "./src/validation.ts",
   ],
   format: ["cjs", "esm"],
   clean: true,

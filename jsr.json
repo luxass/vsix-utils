@@ -4,7 +4,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./zip": "./src/zip.ts",
-    "./files": "./src/files.ts"
+    "./files": "./src/files.ts",
+    "./manifest": "./src/manifest.ts",
+    "./validation": "./src/validation.ts"
   },
   "exclude": [
     "tsup.config.ts",

@@ -16,11 +16,12 @@
     "url": "https://github.com/luxass/vsix-utils/issues"
   },
   "keywords": [
-    "vscode",
+    "utils",
     "vsix",
-    "vsce",
+    "vscode",
+    "extensions",
     "openvsx",
-    "ovsx"
+    "vsmarketplace"
   ],
   "exports": {
     ".": {
@@ -33,14 +34,24 @@
         "default": "./dist/index.cjs"
       }
     },
-    "./zip": {
+    "./manifest": {
       "import": {
-        "types": "./dist/zip.d.ts",
-        "default": "./dist/zip.mjs"
+        "types": "./dist/manifest.d.ts",
+        "default": "./dist/manifest.mjs"
       },
       "require": {
-        "types": "./dist/zip.d.cts",
-        "default": "./dist/zip.cjs"
+        "types": "./dist/manifest.d.cts",
+        "default": "./dist/manifest.cjs"
+      }
+    },
+    "./validation": {
+      "import": {
+        "types": "./dist/validation.d.ts",
+        "default": "./dist/validation.mjs"
+      },
+      "require": {
+        "types": "./dist/validation.d.cts",
+        "default": "./dist/validation.cjs"
       }
     },
     "./files": {
@@ -51,6 +62,16 @@
       "require": {
         "types": "./dist/files.d.cts",
         "default": "./dist/files.cjs"
+      }
+    },
+    "./zip": {
+      "import": {
+        "types": "./dist/zip.d.ts",
+        "default": "./dist/zip.mjs"
+      },
+      "require": {
+        "types": "./dist/zip.d.cts",
+        "default": "./dist/zip.cjs"
       }
     },
     "./package.json": "./package.json"
