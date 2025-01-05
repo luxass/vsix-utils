@@ -2,11 +2,11 @@
   "name": "no-entrypoint",
   "displayName": "No Entrypoint Extension",
   "version": "0.0.1",
-  "description": "A simple extension for vsix-builder tests",
+  "description": "A simple extension for vsix-utils tests",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luxass/vsix-builder.git"
+    "url": "git+https://github.com/luxass/vsix-utils.git"
   },
   "categories": [
     "Other"
