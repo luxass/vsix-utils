@@ -146,7 +146,7 @@ describe("content types", () => {
     const result = getContentTypesForFiles([]);
 
     expect(result.contentTypes).toEqual({});
-    expect(result.file).not.toContain("<Default");
+    expect(result.xml).not.toContain("<Default");
   });
 
   it("should assign default content types for known extensions", () => {
@@ -168,8 +168,9 @@ describe("content types", () => {
       ".json": "application/json",
     });
 
-    expect(result.file).toContain("<Default Extension=\".txt\" ContentType=\"text/plain\" />");
-    expect(result.file).toContain("<Default Extension=\".json\" ContentType=\"application/json\" />");
+    expect(result.xml).toContain("<Default Extension=\".txt\" ContentType=\"text/plain\" />");
+    expect(result.xml).toContain("<Default Extension=\".json\" ContentType=\"application/json\" />");
+    expect(result.xml).toMatchSnapshot();
   });
 
   it("should lookup content types for unknown extensions", () => {
@@ -185,7 +186,8 @@ describe("content types", () => {
       ".jade": "text/jade",
     });
 
-    expect(result.file).toContain("<Default Extension=\".jade\" ContentType=\"text/jade\" />");
+    expect(result.xml).toContain("<Default Extension=\".jade\" ContentType=\"text/jade\" />");
+    expect(result.xml).toMatchSnapshot();
   });
 
   it("should throw an error for unknown extensions that cannot be resolved", () => {

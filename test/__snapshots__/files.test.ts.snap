@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`content types > should assign default content types for known extensions 1`] = `
+"<?xml version="1.0" encoding="utf-8"?>
+            <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+              <Default Extension=".txt" ContentType="text/plain" />
+<Default Extension=".json" ContentType="application/json" />
+
+             </Types>
+          "
+`;
+
+exports[`content types > should lookup content types for unknown extensions 1`] = `
+"<?xml version="1.0" encoding="utf-8"?>
+            <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+              <Default Extension=".jade" ContentType="text/jade" />
+
+             </Types>
+          "
+`;
