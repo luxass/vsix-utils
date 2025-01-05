@@ -6,7 +6,8 @@
     "./zip": "./src/zip.ts",
     "./files": "./src/files.ts",
     "./manifest": "./src/manifest.ts",
-    "./validation": "./src/validation.ts"
+    "./validation": "./src/validation.ts",
+    "./types": "./src/types.ts"
   },
   "exclude": [
     "tsup.config.ts",
