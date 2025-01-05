@@ -1,12 +1,20 @@
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
 import { getExtensionDependencies } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 import { hasPM, transformAbsolutePathToVitestTestdirPath } from "./utils";
 
-describe.runIf(await hasPM("npm"))("npm", () => {
+const execAsync = promisify(exec);
+
+const TIMEOUT = 30_000; // 30 seconds
+
+describe.runIf(await hasPM("npm"))("npm", { timeout: TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -30,7 +38,9 @@ describe.runIf(await hasPM("npm"))("npm", () => {
   //       we have a otion to stop the traversing.
   //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
   it.todo("should throw an error if package is auto and can't be detected", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -48,7 +58,9 @@ describe.runIf(await hasPM("npm"))("npm", () => {
   });
 
   it("should default to auto if package manager is not provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -58,6 +70,8 @@ describe.runIf(await hasPM("npm"))("npm", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("npm install", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -69,7 +83,9 @@ describe.runIf(await hasPM("npm"))("npm", () => {
   });
 
   it("should handle no dependencies correctly", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -79,6 +95,8 @@ describe.runIf(await hasPM("npm"))("npm", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("npm install", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -91,7 +109,9 @@ describe.runIf(await hasPM("npm"))("npm", () => {
   });
 
   it("should handle dependencies correctly", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/with-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/with-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -101,23 +121,30 @@ describe.runIf(await hasPM("npm"))("npm", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("npm install", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
       packageManager: "npm",
     });
 
-    // prevent issues with running tests locally, as the path will be different
-    const dependenciesWithRelative = dependencies.map((dep) => transformAbsolutePathToVitestTestdirPath(dep.path));
+    // prevent issues with running tests in ci and locally, as the path will be different
+    const dependenciesWithRelative = dependencies.map((dep) => ({
+      ...dep,
+      path: transformAbsolutePathToVitestTestdirPath(dep.path),
+    }));
 
+    expect(dependenciesWithRelative).toMatchSnapshot();
     expect(packageManager).toEqual("npm");
-    expect(dependenciesWithRelative).toMatchSnapshot();
   });
 });
 
-describe.runIf(await hasPM("yarn"))("yarn", () => {
+describe.runIf(await hasPM("yarn"))("yarn", { timeout: TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -141,7 +168,9 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
   //       we have a otion to stop the traversing.
   //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
   it.todo("should throw an error if package is auto and can't be detected", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -159,7 +188,9 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
   });
 
   it("should default to auto if package manager is not provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -169,6 +200,8 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("yarn install", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -180,7 +213,9 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
   });
 
   it("should handle no dependencies correctly", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -190,6 +225,8 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("yarn install", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -202,7 +239,9 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
   });
 
   it("should handle dependencies correctly", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/with-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/with-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -213,22 +252,29 @@ describe.runIf(await hasPM("yarn"))("yarn", () => {
 
     const { manifest } = projectManifest;
 
+    await execAsync("yarn install", { cwd: dir });
+
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
       packageManager: "yarn",
     });
 
-    // prevent issues with running tests locally, as the path will be different
-    const dependenciesWithRelative = dependencies.map((dep) => transformAbsolutePathToVitestTestdirPath(dep.path));
+    // prevent issues with running tests in ci and locally, as the path will be different
+    const dependenciesWithRelative = dependencies.map((dep) => ({
+      ...dep,
+      path: transformAbsolutePathToVitestTestdirPath(dep.path),
+    }));
 
-    expect(packageManager).toEqual("yarn");
     expect(dependenciesWithRelative).toMatchSnapshot();
+    expect(packageManager).toEqual("yarn");
   });
 });
 
-describe.runIf(await hasPM("pnpm"))("pnpm", () => {
+describe.runIf(await hasPM("pnpm"))("pnpm", { timeout: TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -252,7 +298,9 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
   //       we have a otion to stop the traversing.
   //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
   it.todo("should throw an error if package is auto and can't be detected", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -270,7 +318,9 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
   });
 
   it("should default to auto if package manager is not provided", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -280,6 +330,8 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -291,7 +343,9 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
   });
 
   it("should handle no dependencies correctly", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -301,6 +355,8 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
     }
 
     const { manifest } = projectManifest;
+
+    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
 
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
@@ -313,7 +369,9 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
   });
 
   it("should handle dependencies correctly", async () => {
-    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/with-dependencies");
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/with-dependencies", {
+      ignore: ["node_modules"],
+    });
     const dir = await testdir(fsFiles);
 
     const projectManifest = await readProjectManifest(dir);
@@ -324,15 +382,20 @@ describe.runIf(await hasPM("pnpm"))("pnpm", () => {
 
     const { manifest } = projectManifest;
 
+    await execAsync("pnpm install --ignore-workspace", { cwd: dir });
+
     const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
       cwd: dir,
       packageManager: "pnpm",
     });
 
-    // prevent issues with running tests locally, as the path will be different
-    const dependenciesWithRelative = dependencies.map((dep) => transformAbsolutePathToVitestTestdirPath(dep.path));
+    // prevent issues with running tests in ci and locally, as the path will be different
+    const dependenciesWithRelative = dependencies.map((dep) => ({
+      ...dep,
+      path: transformAbsolutePathToVitestTestdirPath(dep.path),
+    }));
 
-    expect(packageManager).toEqual("pnpm");
     expect(dependenciesWithRelative).toMatchSnapshot();
+    expect(packageManager).toEqual("pnpm");
   });
 });

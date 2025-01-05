@@ -1,144 +1,290 @@
+import { exec } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { join, normalize } from "node:path";
-
+import { promisify } from "node:util";
 import { assert, describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
-import { collect, getContentTypesForFiles, type VsixFile } from "../src/files";
+import { collect, getContentTypesForFiles, getExtensionDependencies, type VsixFile } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
+import { transformAbsolutePathToVitestTestdirPath } from "./utils";
 
-it("should collect files for a simple extension", async () => {
-  const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension");
-  const path = await testdir(testdirFiles);
+const execAsync = promisify(exec);
 
-  const projectManifest = await readProjectManifest(path);
+describe("collect files", () => {
+  it("collect files for a simple extension", async () => {
+    const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension", {
+      ignore: ["node_modules"],
+    });
+    const dir = await testdir(testdirFiles);
 
-  if (projectManifest == null) {
-    expect.fail("project manifest is null");
-  }
+    const projectManifest = await readProjectManifest(dir);
 
-  const { manifest } = projectManifest;
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
 
-  const files = await collect(manifest, {
-    cwd: path,
+    const { manifest } = projectManifest;
+
+    const files = await collect(manifest, {
+      cwd: dir,
+    });
+
+    assert(manifest.displayName === "Simple Extension", `displayName should be 'Simple Extension' was ${manifest.displayName}`);
+    assert(files.length > 0, "files should not be empty");
+    assert(files.length === 4, "files should have 4 items");
+
+    expect(files).toEqual(expect.arrayContaining([
+      {
+        type: "local",
+        path: normalize("extension/package.json"),
+        localPath: normalize(join(dir, "package.json")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/README.md"),
+        localPath: normalize(join(dir, "README.md")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/LICENSE"),
+        localPath: normalize(join(dir, "LICENSE")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/out/extension.js"),
+        localPath: normalize(join(dir, "out/extension.js")),
+      },
+    ] satisfies VsixFile[]));
   });
 
-  assert(manifest.displayName === "Simple Extension", "displayName should be 'Simple Extension'");
-  assert(files.length > 0, "files should not be empty");
+  it("collect files for a simple extension with a different readme", async () => {
+    const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension", {
+      ignore: ["node_modules"],
+      extras: {
+        "extra-readme.md": "This is an extra README file",
+      },
+    });
 
-  expect(files).toMatchObject(expect.arrayContaining([
-    {
-      type: "local",
-      path: normalize("extension/package.json"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-simple-extension/package.json"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/README.md"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-simple-extension/README.md"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/LICENSE"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-simple-extension/LICENSE"),
-    },
-  ] satisfies VsixFile[]));
-});
+    const dir = await testdir(testdirFiles);
 
-it("should collect files for a extension with a different README path", async () => {
-  const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension", {
-    extras: {
-      "extra-readme.md": "This is an extra README file",
-    },
+    const projectManifest = await readProjectManifest(dir);
+
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
+
+    const { manifest } = projectManifest;
+
+    const files = await collect(manifest, {
+      cwd: dir,
+      readme: "extra-readme.md",
+    });
+
+    const readmeContent = await readFile(join(dir, "extra-readme.md"), "utf8");
+
+    assert(manifest.displayName === "Simple Extension", `displayName should be 'Simple Extension' was ${manifest.displayName}`);
+    assert(files.length > 0, "files should not be empty");
+    assert(files.length === 5, "files should have 5 items");
+
+    expect(files).toEqual(expect.arrayContaining([
+      {
+        type: "local",
+        path: normalize("extension/package.json"),
+        localPath: normalize(join(dir, "package.json")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/README.md"),
+        localPath: normalize(join(dir, "README.md")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/LICENSE"),
+        localPath: normalize(join(dir, "LICENSE")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/out/extension.js"),
+        localPath: normalize(join(dir, "out/extension.js")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/extra-readme.md"),
+        localPath: normalize(join(dir, "extra-readme.md")),
+      },
+    ] satisfies VsixFile[]));
+
+    expect(readmeContent).toBe("This is an extra README file");
   });
 
-  const path = await testdir(testdirFiles);
+  it("collect files for a simple extension with a different ignore file", async () => {
+    const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension", {
+      ignore: ["node_modules"],
+      extras: {
+        ".vsixignore": ".vscode/**\n.gitignore\n**/tsconfig.json",
+      },
+    });
 
-  const projectManifest = await readProjectManifest(path);
+    const dir = await testdir(testdirFiles);
 
-  if (projectManifest == null) {
-    expect.fail("project manifest is null");
-  }
+    const projectManifest = await readProjectManifest(dir);
 
-  const { manifest } = projectManifest;
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
 
-  const files = await collect(manifest, {
-    cwd: path,
-    readme: "extra-readme.md",
+    const { manifest } = projectManifest;
+
+    const files = await collect(manifest, {
+      cwd: dir,
+      ignoreFile: ".vsixignore",
+    });
+
+    assert(manifest.displayName === "Simple Extension", `displayName should be 'Simple Extension' was ${manifest.displayName}`);
+    assert(files.length > 0, "files should not be empty");
+    assert(files.length === 6, "files should have 6 items");
+
+    expect(files).toEqual(expect.arrayContaining([
+      {
+        type: "local",
+        path: normalize("extension/.vsixignore"),
+        localPath: normalize(join(dir, ".vsixignore")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/package.json"),
+        localPath: normalize(join(dir, "package.json")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/README.md"),
+        localPath: normalize(join(dir, "README.md")),
+
+      },
+      {
+        type: "local",
+        path: normalize("extension/LICENSE"),
+        localPath: normalize(join(dir, "LICENSE")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/src/extension.ts"),
+        localPath: normalize(join(dir, "src/extension.ts")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/out/extension.js"),
+        localPath: normalize(join(dir, "out/extension.js")),
+      },
+    ] satisfies VsixFile[]));
   });
 
-  const readmeContent = await readFile(join(path, "extra-readme.md"), "utf8");
+  it("collect files for a no entrypoint extension", async () => {
+    const testdirFiles = await fromFileSystem("./test/fixtures/extensions/tsup-problem-matchers", {
+      ignore: ["node_modules"],
+    });
 
-  assert(manifest.displayName === "Simple Extension", "displayName should be 'Simple Extension'");
-  assert(files.length > 0, "files should not be empty");
+    const dir = await testdir(testdirFiles);
 
-  expect(files).toMatchObject(expect.arrayContaining([
-    {
-      type: "local",
-      path: normalize("extension/package.json"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-README-path/package.json"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/README.md"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-README-path/README.md"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/LICENSE"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-README-path/LICENSE"),
-    },
-  ] satisfies VsixFile[]));
+    const projectManifest = await readProjectManifest(dir);
 
-  expect(readmeContent).toBe("This is an extra README file");
-});
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
 
-it("should collect files for a extension with a different ignore file", async () => {
-  const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-extension", {
-    extras: {
-      ".vsixignore": ".vscode/**\n.gitignore\n**/tsconfig.json",
-    },
+    const { manifest } = projectManifest;
+
+    const files = await collect(manifest, {
+      cwd: dir,
+    });
+
+    assert(manifest.displayName === "tsup Problem Matchers", `displayName should be 'tsup Problem Matchers' was ${manifest.displayName}`);
+    assert(files.length > 0, "files should not be empty");
+    assert(files.length === 4, "files should have 4 items");
+
+    expect(files).toEqual(expect.arrayContaining([
+      {
+        type: "local",
+        path: normalize("extension/package.json"),
+        localPath: normalize(join(dir, "package.json")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/README.md"),
+        localPath: normalize(join(dir, "README.md")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/LICENSE"),
+        localPath: normalize(join(dir, "LICENSE")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/media/icon.png"),
+        localPath: normalize(join(dir, "media/icon.png")),
+      },
+    ] satisfies VsixFile[]));
   });
 
-  const path = await testdir(testdirFiles);
+  // it("collect files for extension with node_modules", { timeout: 10_000 }, async () => {
+  //   const testdirFiles = await fromFileSystem("./test/fixtures/extensions/with-node-modules", {
+  //     ignore: ["node_modules"],
+  //   });
 
-  const projectManifest = await readProjectManifest(path);
+  //   const path = await testdir(testdirFiles);
 
-  if (projectManifest == null) {
-    expect.fail("project manifest is null");
-  }
+  //   const projectManifest = await readProjectManifest(path);
 
-  const { manifest } = projectManifest;
+  //   if (projectManifest == null) {
+  //     expect.fail("project manifest is null");
+  //   }
 
-  const files = await collect(manifest, {
-    cwd: path,
-    ignoreFile: ".vsixignore",
-  });
+  //   const { manifest } = projectManifest;
 
-  assert(manifest.displayName === "Simple Extension", "displayName should be 'Simple Extension'");
-  assert(files.length > 0, "files should not be empty");
+  //   await execAsync("pnpm install", {
+  //     cwd: path,
+  //   });
 
-  expect(files).toMatchObject(expect.arrayContaining([
-    {
-      type: "local",
-      path: normalize("extension/package.json"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/package.json"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/README.md"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/README.md"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/LICENSE"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/LICENSE"),
-    },
-    {
-      type: "local",
-      path: normalize("extension/src/extension.ts"),
-      localPath: normalize(".vitest-testdirs/vitest-files-should-collect-files-for-a-extension-with-a-different-ignore-file/src/extension.ts"),
-    },
-  ] satisfies VsixFile[]));
+  //   const { dependencies } = await getExtensionDependencies(manifest, {
+  //     cwd: path,
+  //     packageManager: "auto",
+  //   });
+
+  //   // prevent issues with running tests in ci and locally, as the path will be different
+  //   const dependenciesWithRelative = dependencies.map((dep) => ({
+  //     ...dep,
+  //     path: transformAbsolutePathToVitestTestdirPath(dep.path),
+  //   }));
+
+  //   expect(dependenciesWithRelative).toMatchSnapshot();
+
+  //   const files = await collect(manifest, {
+  //     cwd: path,
+  //     dependencies: dependenciesWithRelative,
+  //   });
+
+  //   assert(manifest.displayName === "With Node Modules Extension", `displayName should be 'With Node Modules Extension' was ${manifest.displayName}`);
+  //   assert(files.length > 0, "files should not be empty");
+
+  //   expect(files).toMatchObject(expect.arrayContaining([
+  //     {
+  //       type: "local",
+  //       path: normalize("extension/package.json"),
+  //       localPath: normalize(join(path, "package.json")),
+  //     },
+  //     {
+  //       type: "local",
+  //       path: normalize("extension/README.md"),
+  //       localPath: normalize(join(path, "README.md")),
+
+  //     },
+  //     {
+  //       type: "local",
+  //       path: normalize("extension/LICENSE"),
+  //       localPath: normalize(join(path, "LICENSE")),
+  //     },
+  //   ] satisfies VsixFile[]));
+  // });
 });
 
 describe("content types", () => {

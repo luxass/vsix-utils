@@ -57,7 +57,7 @@ export interface CollectOptions {
   /**
    * The dependencies to include in the package.
    */
-  dependencies?: string[];
+  dependencies?: ExtensionDependency[];
 
   /**
    * README file path
@@ -73,7 +73,7 @@ export interface CollectOptions {
  * @param {CollectOptions} options - Configuration options for file collection
  * @param {string?} options.cwd - The current working directory (defaults to process.cwd())
  * @param {string?} options.ignoreFile - The name of the ignore file to use (defaults to ".vscodeignore")
- * @param {string[]?} options.dependencies - The dependencies to include in the package
+ * @param {ExtensionDependency[]?} options.dependencies - The dependencies to include in the package
  * @param {string?} options.readme - The name of the readme file to include (defaults to "README.md")
  *
  * @returns {Promise<VsixFile[]>} A promise that resolves to an array of VsixFile objects representing the files to be included
@@ -88,9 +88,11 @@ export async function collect(manifest: Manifest, options: CollectOptions): Prom
   const {
     cwd = process.cwd(),
     ignoreFile = ".vscodeignore",
-    // dependencies = [],
+    dependencies = [],
     readme = "README.md",
   } = options;
+
+  console.log("dependencies", dependencies);
 
   // TODO: fix all of this ignore file handling.
   const gitignorePath = path.join(cwd, ".gitignore");
@@ -257,11 +259,9 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
         throw new Error(`could not parse dependency: ${line}`);
       }
 
-      const dependencyName = dependency.split(path.sep)[0];
-
       dependencies.add({
-        name: dependencyName!,
-        version: manifest.dependencies != null ? manifest.dependencies[dependencyName!] : undefined,
+        name: dependency,
+        version: manifest.dependencies != null ? manifest.dependencies[dependency] : undefined,
         path: line,
       });
     }
@@ -349,7 +349,6 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
   } else if (packageManager === "pnpm") {
     // use --ignore-workspace to avoid always including the workspace packages
     const { stdout } = await execAsync("pnpm list --production --json --depth=99999 --loglevel=error --ignore-workspace", { cwd });
-
     let entryList = [];
     try {
       entryList = JSON.parse(stdout);

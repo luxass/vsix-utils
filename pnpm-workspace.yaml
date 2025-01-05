@@ -1,0 +1,4 @@
+packages:
+  - ./test/fixtures/extensions/**/*
+  - "!./test/fixtures/extensions/**/node_modules"
+  - "!**/.vitest-testdirs/**/*/*"

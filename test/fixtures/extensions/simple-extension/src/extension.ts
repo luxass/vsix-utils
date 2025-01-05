@@ -1,13 +1,19 @@
-import * as vscode from "vscode";
+import type { ExtensionContext } from "vscode";
+import { commands, window } from "vscode"
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log("Congratulations, your extension \"simple-extension\" is now active!");
+export function activate(context: ExtensionContext) {
+  context.subscriptions.push(
+    commands.registerCommand("simple-extension.build", () => {
+      // open a terminal
+      const terminal = window.createTerminal("Simple Extension");
 
-  const disposable = vscode.commands.registerCommand("simple-extension.helloWorld", () => {
-    vscode.window.showInformationMessage("Hello World from Simple Extension!");
-  });
+      // run a shell command
+      terminal.sendText("echo 'Building...'");
 
-  context.subscriptions.push(disposable);
+      // show the terminal
+      terminal.show();
+    })
+  );
 }
 
-export function deactivate() {}
+export function deactivate() { }

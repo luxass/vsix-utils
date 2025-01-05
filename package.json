@@ -97,10 +97,12 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:extensions": "pnpm --filter \"./test/fixtures/extensions/**\" run build",
     "dev": "tsup --watch",
     "test": "vitest run",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pretest": "pnpm run build:extensions"
   },
   "dependencies": {
     "fast-xml-parser": "^4.5.1",
