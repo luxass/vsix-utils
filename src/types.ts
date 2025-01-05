@@ -14,9 +14,30 @@ export type PackageManager = "npm" | "yarn" | "pnpm";
  */
 export type PackageManagerWithAuto = PackageManager | "auto";
 
+/**
+ * The pricing of an extension.
+ */
+export type ExtensionPricing = "Free" | "Trial";
+
+/**
+ * Represents a person associated with the extension.
+ */
 export interface Person {
+  /**
+   * The full name of the person
+   */
   name: string;
+
+  /**
+   * The website or personal page of the person
+   * Optional URL where more information about the person can be found
+   */
   url?: string;
+
+  /**
+   * The contact email address of the person
+   * Optional email for reaching out to the person
+   */
   email?: string;
 }
 
@@ -79,16 +100,44 @@ export interface Contributions {
   readonly [contributionType: string]: any;
 }
 
+/**
+ * The kind of extension.
+ */
 export type ExtensionKind = "ui" | "workspace" | "web";
 
+/**
+ * The manifest of an extension.
+ *
+ * This is a subset of the official `package.json` schema,
+ * with additional fields that are specific to Visual Studio Code extensions.
+ */
 export interface Manifest {
-  // mandatory (npm)
+  /**
+   * The name of the extension.
+   *
+   * NOTE:
+   * This is mandatory for npm packages, and therefore is mandatory here.
+   */
   name: string;
-  version: string;
-  engines: { [name: string]: string };
 
-  // vscode
+  /**
+   * The version of the extension.
+   *
+   * NOTE:
+   * This is mandatory for npm packages, and therefore is mandatory here.
+   */
+  version: string;
+
+  /**
+   * Engines
+   */
+  engines: Record<string, string>;
+
+  /**
+   * The publisher of the extension.
+   */
   publisher: string;
+
   icon?: string;
   contributes?: Contributions;
   activationEvents?: string[];
@@ -123,5 +172,9 @@ export interface Manifest {
   dependencies?: { [name: string]: string };
   devDependencies?: { [name: string]: string };
   private?: boolean;
-  pricing?: string;
+
+  /**
+   * The pricing to use for the extension.
+   */
+  pricing?: ExtensionPricing;
 }
