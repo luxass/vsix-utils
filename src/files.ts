@@ -6,7 +6,7 @@
 
 import type { Buffer } from "node:buffer";
 import type { ManifestAsset } from "./manifest";
-import type { Manifest, PackageManager, PackageManagerWithAuto } from "./types";
+import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
