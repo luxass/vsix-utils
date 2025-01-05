@@ -439,14 +439,14 @@ export interface ContentTypeResult {
    * NOTE:
    * Used inside the VSIX package to define the content types of the files.
    */
-  file: string;
+  xml: string;
 }
 
 /**
  * Generates content types mapping and XML representation for VSIX files
  * @param {VsixFile[]} files - Array of VSIX files to process
  * @returns {ContentTypeResult} Object containing:
- *  - file: XML string representation of content types
+ *  - xml: XML string representation of content types
  *  - contentTypes: Record mapping file extensions to their content types
  * @throws {Error} When content type cannot be determined for a file
  * @example
@@ -460,7 +460,7 @@ export interface ContentTypeResult {
  *   { type: "local", path: "extension/dist/extension.js", localPath: "/path/to/extension/dist/extension.js" },
  * ];
  *
- * const { file, contentTypes } = getContentTypesForFiles(files);
+ * const { xml, contentTypes } = getContentTypesForFiles(files);
  * ```
  */
 export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
@@ -484,14 +484,14 @@ export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
     }
   }
 
-  const file = /* xml */`<?xml version="1.0" encoding="utf-8"?>
+  const xml = /* xml */`<?xml version="1.0" encoding="utf-8"?>
             <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
               ${Object.entries(contentTypes).map(([ext, contentType]) => `<Default Extension="${ext}" ContentType="${contentType}" />\n`).join("")}
              </Types>
           `;
 
   return {
-    file,
+    xml,
     contentTypes,
   };
 }
