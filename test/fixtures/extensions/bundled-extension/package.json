@@ -1,8 +1,8 @@
 {
-  "name": "simple-extension",
-  "displayName": "Simple Extension",
+  "name": "bundled-extension",
+  "displayName": "Bundled Extension",
   "version": "0.0.1",
-  "description": "A simple extension for vsix-utils tests",
+  "description": "A bundled extension for vsix-utils tests",
   "private": true,
   "repository": {
     "type": "git",
@@ -19,20 +19,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "simple-extension.build",
+        "command": "bundled-extension.build",
         "title": "Build",
-        "category": "Simple Extension"
+        "category": "Bundled Extension"
+      },
+      {
+        "command": "bundled-extension.parse-yaml",
+        "title": "Parse Yaml",
+        "category": "Bundled Extension"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "pnpm run build",
-    "build": "tsc -p ./",
-    "dev": "tsc -watch -p ./"
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "devDependencies": {
+    "js-yaml": "^4.1.0",
     "@types/node": "^20",
+    "@types/js-yaml": "^4.0.9",
     "@types/vscode": "^1.90.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "tsup": "^8.3.5"
   }
 }

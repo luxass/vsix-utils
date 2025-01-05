@@ -92,8 +92,6 @@ export async function collect(manifest: Manifest, options: CollectOptions): Prom
     readme = "README.md",
   } = options;
 
-  console.log("dependencies", dependencies);
-
   // TODO: fix all of this ignore file handling.
   const gitignorePath = path.join(cwd, ".gitignore");
   const vscodeIgnorePath = path.join(cwd, ignoreFile);
@@ -126,6 +124,16 @@ export async function collect(manifest: Manifest, options: CollectOptions): Prom
     localPath: path.join(cwd, file),
     path: path.join("extension/", file),
   })) satisfies VsixFile[];
+
+  if (dependencies.length > 0) {
+    for (const dep of dependencies) {
+      files.push({
+        type: "local",
+        path: path.join("extension/node_modules", dep.name),
+        localPath: dep.path.replace(process.cwd() + path.sep, ""),
+      });
+    }
+  }
 
   return files;
 }
@@ -260,8 +268,8 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
       }
 
       dependencies.add({
-        name: dependency,
-        version: manifest.dependencies != null ? manifest.dependencies[dependency] : undefined,
+        name: dependency.replace(/\\/g, "/"),
+        version: manifest.dependencies != null ? manifest.dependencies[dependency.replace(/\\/g, "/")] : undefined,
         path: line,
       });
     }

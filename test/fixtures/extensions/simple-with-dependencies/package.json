@@ -1,8 +1,8 @@
 {
-  "name": "simple-extension",
-  "displayName": "Simple Extension",
+  "name": "simple-with-dependencies",
+  "displayName": "Simple with Dependencies Extension",
   "version": "0.0.1",
-  "description": "A simple extension for vsix-utils tests",
+  "description": "A simple with dependencies extension for vsix-utils tests",
   "private": true,
   "repository": {
     "type": "git",
@@ -19,8 +19,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "simple-extension.build",
+        "command": "simple-with-dependencies-extension.build",
         "title": "Build",
+        "category": "Simple Extension"
+      },
+      {
+        "command": "simple-with-dependencies-extension.parse-yaml",
+        "title": "Parse Yaml",
         "category": "Simple Extension"
       }
     ]
@@ -30,7 +35,11 @@
     "build": "tsc -p ./",
     "dev": "tsc -watch -p ./"
   },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "@types/vscode": "^1.90.0",
     "typescript": "^5.6.3"

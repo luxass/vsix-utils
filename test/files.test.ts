@@ -4,10 +4,10 @@ import { join, normalize } from "node:path";
 import { promisify } from "node:util";
 import { assert, describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
-import { collect, getContentTypesForFiles, type VsixFile } from "../src/files";
+import { collect, getContentTypesForFiles, getExtensionDependencies, isInMemoryFile, isLocalFile, type VsixFile } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 
-const _execAsync = promisify(exec);
+const execAsync = promisify(exec);
 
 describe("collect files", () => {
   it("collect files for a simple extension", async () => {
@@ -50,8 +50,8 @@ describe("collect files", () => {
       },
       {
         type: "local",
-        path: normalize("extension/out/extension.js"),
-        localPath: normalize(join(dir, "out/extension.js")),
+        path: normalize("extension/dist/extension.js"),
+        localPath: normalize(join(dir, "dist/extension.js")),
       },
     ] satisfies VsixFile[]));
   });
@@ -103,8 +103,8 @@ describe("collect files", () => {
       },
       {
         type: "local",
-        path: normalize("extension/out/extension.js"),
-        localPath: normalize(join(dir, "out/extension.js")),
+        path: normalize("extension/dist/extension.js"),
+        localPath: normalize(join(dir, "dist/extension.js")),
       },
       {
         type: "local",
@@ -172,8 +172,8 @@ describe("collect files", () => {
       },
       {
         type: "local",
-        path: normalize("extension/out/extension.js"),
-        localPath: normalize(join(dir, "out/extension.js")),
+        path: normalize("extension/dist/extension.js"),
+        localPath: normalize(join(dir, "dist/extension.js")),
       },
     ] satisfies VsixFile[]));
   });
@@ -225,65 +225,120 @@ describe("collect files", () => {
     ] satisfies VsixFile[]));
   });
 
-  // it("collect files for extension with node_modules", { timeout: 10_000 }, async () => {
-  //   const testdirFiles = await fromFileSystem("./test/fixtures/extensions/with-node-modules", {
-  //     ignore: ["node_modules"],
-  //   });
+  it("collect files for a bundled extension", async () => {
+    const testdirFiles = await fromFileSystem("./test/fixtures/extensions/bundled-extension", {
+      ignore: ["node_modules"],
+    });
 
-  //   const path = await testdir(testdirFiles);
+    const dir = await testdir(testdirFiles);
 
-  //   const projectManifest = await readProjectManifest(path);
+    const projectManifest = await readProjectManifest(dir);
 
-  //   if (projectManifest == null) {
-  //     expect.fail("project manifest is null");
-  //   }
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
 
-  //   const { manifest } = projectManifest;
+    const { manifest } = projectManifest;
 
-  //   await execAsync("pnpm install", {
-  //     cwd: path,
-  //   });
+    const files = await collect(manifest, {
+      cwd: dir,
+    });
 
-  //   const { dependencies } = await getExtensionDependencies(manifest, {
-  //     cwd: path,
-  //     packageManager: "auto",
-  //   });
+    assert(manifest.displayName === "Bundled Extension", `displayName should be 'Bundled Extension' was ${manifest.displayName}`);
+    assert(files.length > 0, "files should not be empty");
+    assert(files.length === 4, "files should have 4 items");
 
-  //   // prevent issues with running tests in ci and locally, as the path will be different
-  //   const dependenciesWithRelative = dependencies.map((dep) => ({
-  //     ...dep,
-  //     path: transformAbsolutePathToVitestTestdirPath(dep.path),
-  //   }));
+    expect(files).toEqual(expect.arrayContaining([
+      {
+        type: "local",
+        path: normalize("extension/package.json"),
+        localPath: normalize(join(dir, "package.json")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/README.md"),
+        localPath: normalize(join(dir, "README.md")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/LICENSE"),
+        localPath: normalize(join(dir, "LICENSE")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/dist/extension.js"),
+        localPath: normalize(join(dir, "dist/extension.js")),
+      },
+    ] satisfies VsixFile[]));
+  });
 
-  //   expect(dependenciesWithRelative).toMatchSnapshot();
+  it("collect files for a simple extension with dependencies", async () => {
+    const testdirFiles = await fromFileSystem("./test/fixtures/extensions/simple-with-dependencies");
 
-  //   const files = await collect(manifest, {
-  //     cwd: path,
-  //     dependencies: dependenciesWithRelative,
-  //   });
+    const dir = await testdir(testdirFiles);
 
-  //   assert(manifest.displayName === "With Node Modules Extension", `displayName should be 'With Node Modules Extension' was ${manifest.displayName}`);
-  //   assert(files.length > 0, "files should not be empty");
+    const projectManifest = await readProjectManifest(dir);
 
-  //   expect(files).toMatchObject(expect.arrayContaining([
-  //     {
-  //       type: "local",
-  //       path: normalize("extension/package.json"),
-  //       localPath: normalize(join(path, "package.json")),
-  //     },
-  //     {
-  //       type: "local",
-  //       path: normalize("extension/README.md"),
-  //       localPath: normalize(join(path, "README.md")),
+    if (projectManifest == null) {
+      expect.fail("project manifest is null");
+    }
 
-  //     },
-  //     {
-  //       type: "local",
-  //       path: normalize("extension/LICENSE"),
-  //       localPath: normalize(join(path, "LICENSE")),
-  //     },
-  //   ] satisfies VsixFile[]));
-  // });
+    const { manifest } = projectManifest;
+
+    await execAsync("pnpm install --ignore-workspace", {
+      cwd: dir,
+    });
+
+    const { dependencies, packageManager } = await getExtensionDependencies(manifest, {
+      cwd: dir,
+      packageManager: "auto",
+    });
+
+    expect(packageManager).toBe("pnpm");
+    expect(dependencies.length).toBeGreaterThan(0);
+
+    const files = await collect(manifest, {
+      cwd: dir,
+      dependencies,
+    });
+
+    assert(manifest.displayName === "Simple with Dependencies Extension", `displayName should be 'Simple with Dependencies Extension' was ${manifest.displayName}`);
+    assert(files.length > 0, "files should not be empty");
+    assert(files.length === 6, "files should have 6 items");
+
+    expect(files).toEqual(expect.arrayContaining([
+      {
+        type: "local",
+        path: normalize("extension/package.json"),
+        localPath: normalize(join(dir, "package.json")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/README.md"),
+        localPath: normalize(join(dir, "README.md")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/LICENSE"),
+        localPath: normalize(join(dir, "LICENSE")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/dist/extension.js"),
+        localPath: normalize(join(dir, "dist/extension.js")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/node_modules/js-yaml"),
+        localPath: normalize(join(dir, "node_modules/.pnpm/js-yaml@4.1.0/node_modules/js-yaml")),
+      },
+      {
+        type: "local",
+        path: normalize("extension/node_modules/argparse"),
+        localPath: normalize(join(dir, "node_modules/.pnpm/argparse@2.0.1/node_modules/argparse")),
+      },
+    ] satisfies VsixFile[]));
+  });
 });
 
 describe("content types", () => {
