@@ -15,6 +15,7 @@ import process from "node:process";
 import { promisify } from "node:util";
 import ignore from "ignore";
 import mime from "mime";
+import { detect } from "package-manager-detector";
 import { glob } from "tinyglobby";
 import { VSCE_DEFAULT_IGNORE } from "./vsce-constants";
 
@@ -136,6 +137,28 @@ export async function collect(manifest: Manifest, options: CollectOptions): Prom
   }
 
   return files;
+}
+
+/**
+ * Detects and returns the package manager being used in the specified directory.
+ *
+ * @param {string} cwd - The current working directory path to detect the package manager from
+ * @returns {Promise<PackageManager | null>} Promise that resolves with the detected package manager name
+ * @throws {Error} If no package manager could be detected
+ * @throws {Error} If an unsupported package manager (deno/bun) is detected
+ */
+export async function getExtensionPackageManager(cwd: string): Promise<PackageManager | null> {
+  const result = await detect({ cwd });
+
+  if (result == null) {
+    throw new Error("could not detect package manager");
+  }
+
+  if (result.name === "deno" || result.name === "bun") {
+    throw new Error(`unsupported package manager: ${result.name}`);
+  }
+
+  return result.name;
 }
 
 export interface ExtensionDependenciesOptions {

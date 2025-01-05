@@ -19,6 +19,7 @@ export {
   collect,
   getContentTypesForFiles,
   getExtensionDependencies,
+  getExtensionPackageManager,
   isInMemoryFile,
   isLocalFile,
   processFiles,
