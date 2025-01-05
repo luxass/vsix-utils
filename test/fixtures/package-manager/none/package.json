@@ -1,0 +1,15 @@
+{
+  "name": "no-pm",
+  "version": "0.0.1",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxass/vsix-utils.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0"
+  }
+}
