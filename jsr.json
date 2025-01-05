@@ -1,6 +1,6 @@
 {
   "name": "@luxass/vsix-utils",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "exports": {
     ".": "./src/index.ts",
     "./zip": "./src/zip.ts",
