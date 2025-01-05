@@ -1,0 +1,41 @@
+{
+  "name": "with-node-modules",
+  "displayName": "With Node Modules Extension",
+  "version": "0.0.1",
+  "description": "A simple extension for vsix-utils tests",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxass/vsix-utils.git"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "with-node-modules-extension.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run build",
+    "build": "tsc -p ./",
+    "dev": "tsc -watch -p ./",
+    "package": "pnpm vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^20",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.6.3"
+  }
+}
