@@ -1,4 +1,18 @@
-export type PackageManager = "npm" | "yarn" | "pnpm" | "auto";
+/**
+ * @module types
+ *
+ * This module contains type definitions that are shared across multiple modules.
+ */
+
+/**
+ * The package manager to use.
+ */
+export type PackageManager = "npm" | "yarn" | "pnpm";
+
+/**
+ * Specifies the package manager to use, or automatically detect it.
+ */
+export type PackageManagerWithAuto = PackageManager | "auto";
 
 export interface Person {
   name: string;

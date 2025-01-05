@@ -39,7 +39,11 @@ export {
   transformExtensionKind,
 } from "./manifest";
 export { prepublish, type PrepublishOptions } from "./scripts";
-export type { Manifest, PackageManager } from "./types";
+export type {
+  Manifest,
+  PackageManager,
+  PackageManagerWithAuto,
+} from "./types";
 export type { ManifestValidation } from "./validation";
 export {
   ALLOWED_SPONSOR_PROTOCOLS,

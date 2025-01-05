@@ -6,7 +6,7 @@
 
 import type { Buffer } from "node:buffer";
 import type { ManifestAsset } from "./manifest";
-import type { Manifest, PackageManager } from "./types";
+import type { Manifest, PackageManager, PackageManagerWithAuto } from "./types";
 import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
@@ -133,7 +133,7 @@ export interface ExtensionDependenciesOptions {
    * The package manager to use.
    * @default "auto"
    */
-  packageManager?: PackageManager;
+  packageManager?: PackageManagerWithAuto;
 
   /**
    * The current working directory
@@ -168,7 +168,7 @@ export interface ExtensionDependenciesResult {
   /**
    * The package manager used to resolve the dependencies.
    */
-  packageManager: Exclude<PackageManager, "auto"> | null;
+  packageManager: PackageManager | null;
 }
 
 interface PnpmDependency {
@@ -220,7 +220,7 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
     cwd = process.cwd(),
   } = options;
 
-  let packageManager: Exclude<PackageManager, "auto"> | null = null;
+  let packageManager: PackageManager | null = null;
 
   if (pm === "auto") {
     const detect = await import("package-manager-detector/detect").then((m) => m.detect);
