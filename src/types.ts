@@ -105,6 +105,28 @@ export interface Contributions {
  */
 export type ExtensionKind = "ui" | "workspace" | "web";
 
+export type ExtensionCategory =
+  | "AI"
+  | "Azure"
+  | "Chat"
+  | "Data Science"
+  | "Debuggers"
+  | "Extension Packs"
+  | "Education"
+  | "Formatters"
+  | "Keymaps"
+  | "Language Packs"
+  | "Linters"
+  | "Machine Learning"
+  | "Notebooks"
+  | "Programming Languages"
+  | "SCM Providers"
+  | "Snippets"
+  | "Testing"
+  | "Themes"
+  | "Visualization"
+  | "Other";
+
 /**
  * The manifest of an extension.
  *
@@ -138,39 +160,132 @@ export interface Manifest {
    */
   publisher: string;
 
+  /**
+   * Icon of the extension.
+   */
   icon?: string;
+
   contributes?: Contributions;
+
+  /**
+   * The activation events of the extension.
+   */
   activationEvents?: string[];
+
+  /**
+   * The extension dependencies of the extension.
+   */
   extensionDependencies?: string[];
+
   extensionPack?: string[];
   galleryBanner?: { color?: string; theme?: string };
   preview?: boolean;
   badges?: { url: string; href: string; description: string }[];
+
   markdown?: "github" | "standard";
+
   _bundling?: { [name: string]: string }[];
   _testing?: string;
+
   enableProposedApi?: boolean;
+
+  /**
+   * List of proposed API proposals that are enabled.
+   * @default []
+   */
   enabledApiProposals?: readonly string[];
+
+  /**
+   * QnA of the extension
+   * @default "marketplace"
+   */
   qna?: "marketplace" | string | false;
+
+  /**
+   * The kind of extension.
+   */
   extensionKind?: ExtensionKind[] | ExtensionKind;
+
+  /**
+   * Sponsor URL of the extension.
+   */
   sponsor?: { url: string };
 
-  // optional (npm)
+  /**
+   * The author of the extension.
+   */
   author?: string | Person;
+
+  /**
+   * The display name of the extension.
+   */
   displayName?: string;
+
+  /**
+   * The description of the extension.
+   */
   description?: string;
+
+  /**
+   * The keywords of the extension.
+   */
   keywords?: string[];
-  categories?: string[];
+
+  /**
+   * The categories of the extension.
+   */
+  categories?: ExtensionCategory[];
+
+  /**
+   * The homepage of the extension.
+   */
   homepage?: string;
+
+  /**
+   * The bugs URL or email of the extension.
+   */
   bugs?: string | { url?: string; email?: string };
+
+  /**
+   * The license of the extension.
+   */
   license?: string;
+
+  /**
+   * List of contributors of the extension.
+   */
   contributors?: string | Person[];
+
+  /**
+   * The main entrypoint of the extension.
+   */
   main?: string;
+
+  /**
+   * The browser entrypoint of the extension.
+   */
   browser?: string;
+
+  /**
+   * The repository of the extension.
+   */
   repository?: string | { type?: string; url?: string };
-  scripts?: { [name: string]: string };
-  dependencies?: { [name: string]: string };
-  devDependencies?: { [name: string]: string };
+
+  /**
+   * The scripts of the extension.
+   */
+  scripts?: Record<string, string>;
+
+  /**
+   * The dependencies of the extension.
+   */
+  dependencies?: Record<string, string>;
+
+  /**
+   * The devDependencies of the extension.
+   */
+  devDependencies?: Record<string, string>;
+
   private?: boolean;
 
   /**
