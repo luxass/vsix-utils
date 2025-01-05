@@ -2,13 +2,62 @@ import { exec } from "node:child_process";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
-import { getExtensionDependencies } from "../src/files";
+import { getExtensionDependencies, getExtensionPackageManager } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 import { hasPM, transformAbsolutePathToVitestTestdirPath } from "./utils";
 
 const execAsync = promisify(exec);
 
 const TIMEOUT = 30_000; // 30 seconds
+
+describe("detect package manager", () => {
+  it("should detect npm", async () => {
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/npm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
+    const dir = await testdir(fsFiles);
+
+    const packageManager = await getExtensionPackageManager(dir);
+
+    expect(packageManager).toEqual("npm");
+  });
+
+  it("should detect yarn", async () => {
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/yarn/no-dependencies", {
+      ignore: ["node_modules"],
+    });
+    const dir = await testdir(fsFiles);
+
+    const packageManager = await getExtensionPackageManager(dir);
+
+    expect(packageManager).toEqual("yarn");
+  });
+
+  it("should detect pnpm", async () => {
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/pnpm/no-dependencies", {
+      ignore: ["node_modules"],
+    });
+    const dir = await testdir(fsFiles);
+
+    const packageManager = await getExtensionPackageManager(dir);
+
+    expect(packageManager).toEqual("pnpm");
+  });
+
+  // TODO: currently the package manager detect is traversing up the directory
+  //       and therefor will locate the package.json in the root of the project
+  //       instead of stopping at the test directory. So this test will fail until
+  //       we have a otion to stop the traversing.
+  //       PR: https://github.com/antfu-collective/package-manager-detector/pull/39
+  it.todo("should throw an error if no package manager is detected", async () => {
+    const fsFiles = await fromFileSystem("./test/fixtures/package-manager/none", {
+      ignore: ["node_modules"],
+    });
+    const dir = await testdir(fsFiles);
+
+    await expect(getExtensionPackageManager(dir)).rejects.toThrow("unable to detect package manager");
+  });
+});
 
 describe.runIf(await hasPM("npm"))("npm", { timeout: TIMEOUT }, () => {
   it("should throw an error if unsupported package manager is provided", async () => {
