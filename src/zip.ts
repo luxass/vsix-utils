@@ -1,6 +1,7 @@
 /**
- * This module contains utility functions for creating and reading vsix files.
  * @module zip
+ *
+ * This module contains utility functions for creating and reading vsix files.
  *
  *  @example
  * ```ts

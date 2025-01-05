@@ -1,6 +1,7 @@
 /**
- * This module contains utility functions for handling files.
  * @module files
+ *
+ * This module contains utility functions for handling files.
  */
 
 import type { Buffer } from "node:buffer";

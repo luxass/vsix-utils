@@ -1,6 +1,30 @@
 /**
- * This module contains utility functions for validating manifests.
  * @module validation
+ *
+ * This module contains utility functions for validating manifests.
+ *
+ * @example
+ * ```ts
+ * import { readProjectManifest } from "vsix-utils/manifest";
+ * import { validateProjectManifest } from "vsix-utils/validation";
+ *
+ * const projectManifest = await readProjectManifest('/path/to/project');
+ *
+ * if (projectManifest != null) {
+ *   console.log("an error occurred while reading the project manifest");
+ * }
+ *
+ * const { manifest } = projectManifest;
+ *
+ * const errors = await validateProjectManifest(manifest);
+ *
+ * if (errors != null) {
+ *   console.log("validation failed with the following errors:");
+ *   console.log(errors);
+ * }
+ *
+ * console.log("no errors found");
+ * ```
  */
 
 import type { Manifest } from "./types";
