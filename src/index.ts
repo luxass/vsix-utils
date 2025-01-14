@@ -38,6 +38,7 @@ export {
   readProjectManifest,
   transformExtensionKind,
 } from "./manifest";
+export { inferBaseUrls, type InferredBaseUrls, type MarkdownOptions, transformMarkdown } from "./markdown";
 export { prepublish, type PrepublishOptions } from "./scripts";
 export type {
   Manifest,
