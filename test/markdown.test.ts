@@ -9,11 +9,12 @@ describe("transformMarkdown", () => {
 
     expect(content).toBeDefined();
 
-    const transformed = await transformMarkdown({
+    const manifest = createManifest({
+      repository: "https://github.com/luxass/vsix-utils.git",
+    });
+
+    const transformed = await transformMarkdown(manifest, {
       content,
-      manifest: createManifest({
-        repository: "https://github.com/luxass/vsix-utils.git",
-      }),
     });
 
     expect(transformed).toMatchSnapshot();
@@ -24,11 +25,12 @@ describe("transformMarkdown", () => {
 
     expect(content).toBeDefined();
 
-    const transformed = await transformMarkdown({
+    const manifest = createManifest({
+      repository: "https://github.com/luxass/vsix-utils.git",
+    });
+
+    const transformed = await transformMarkdown(manifest, {
       content,
-      manifest: createManifest({
-        repository: "https://github.com/luxass/vsix-utils.git",
-      }),
       baseContentUrl: "https://github.com/luxass/luxass.dev",
       baseImagesUrl: "https://github.com/luxass/luxass.dev",
     });
@@ -41,10 +43,11 @@ describe("transformMarkdown", () => {
 
     expect(content).toBeDefined();
 
+    const manifest = createManifest();
+
     await expect(() =>
-      transformMarkdown({
+      transformMarkdown(manifest, {
         content,
-        manifest: createManifest(),
       }),
     ).rejects.toThrowError("Couldn't detect the repository where this extension is published.");
   });

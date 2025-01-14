@@ -3,12 +3,6 @@ import { remark } from "remark";
 import remarkTransformLinks from "remark-transform-links";
 
 export interface MarkdownOptions {
-
-  /**
-   * The manifest of the extension.
-   */
-  manifest: Manifest;
-
   /**
    * The markdown content to transform.
    */
@@ -37,7 +31,7 @@ export interface MarkdownOptions {
   branch?: string;
 }
 
-export async function transformMarkdown(options: MarkdownOptions): Promise<string> {
+export async function transformMarkdown(manifest: Manifest, options: MarkdownOptions): Promise<string> {
   const {
     content,
     rewrite = true,
@@ -50,7 +44,7 @@ export async function transformMarkdown(options: MarkdownOptions): Promise<strin
 
   let { baseContentUrl, baseImagesUrl } = options;
 
-  const baseUrls = inferBaseUrls(options.manifest, branch);
+  const baseUrls = inferBaseUrls(manifest, branch);
 
   if (baseUrls == null) {
     throw new Error("Couldn't detect the repository where this extension is published.");
