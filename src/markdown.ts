@@ -64,9 +64,20 @@ export async function transformMarkdown(options: MarkdownOptions): Promise<strin
     baseImagesUrl = baseUrls.imagesUrl;
   }
 
+  const detectedSyntax = detectMarkdownSyntax(content);
+
   const file = await remark()
+    .data("settings", {
+      bullet: detectedSyntax.bullet,
+      bulletOrdered: detectedSyntax.bulletOrdered,
+      emphasis: detectedSyntax.emphasis,
+      listItemIndent: detectedSyntax.listItemIndent,
+      fence: detectedSyntax.fence,
+      strong: detectedSyntax.strong,
+      rule: detectedSyntax.rule,
+    })
     .use(remarkTransformLinks, {
-      baseUrl(path, type) {
+      baseUrl(_, type) {
         if (type === "image" || type === "html_img" || type === "html_video") {
           return baseImagesUrl;
         }
@@ -137,4 +148,83 @@ export function inferBaseUrls(manifest: Manifest, branch?: string): InferredBase
   }
 
   return null;
+}
+
+export interface DetectedMarkdownSyntax {
+  bullet?: "-" | "+" | "*";
+  bulletOrdered?: "." | ")";
+  emphasis?: "_" | "*";
+  strong?: "_" | "*";
+  fence?: "`" | "~";
+  listItemIndent?: "tab" | "one" | "mixed";
+  rule?: "*" | "-" | "_";
+}
+
+/**
+ * Detects and extracts markdown syntax preferences from a given content string.
+ *
+ * @param {string} content - The markdown content to analyze
+ * @returns {DetectedMarkdownSyntax} An object containing detected markdown syntax preferences:
+ * - `bullet`: The unordered list bullet style (`-`, `+`, or `*`)
+ * - `bulletOrdered`: The ordered list marker style (`.` or `)`)
+ * - `emphasis`: The emphasis marker style (`_` or `*`)
+ * - `strong`: The strong emphasis style (`_` or `*`)
+ * - `fence`: The code fence style (``` ` ``` or `~`)
+ * - `listItemIndent`: The list item indentation style (`"one"`, `"tab"`, or `"mixed"`)
+ * - `rule`: The rule style (`*`, `-`, or `_`)
+ *
+ * @example
+ * ```ts
+ * const syntax = detectMarkdownSyntax("* List item\n**bold text**");
+ * // Returns: { bullet: "*", strong: "**" }
+ * ```
+ */
+export function detectMarkdownSyntax(content: string): DetectedMarkdownSyntax {
+  const style: DetectedMarkdownSyntax = {};
+
+  // detect unordered list bullet style
+  const bulletMatch = content.match(/^[ \t]*([*+-])\s/m);
+  if (bulletMatch) {
+    style.bullet = bulletMatch[1] as "-" | "+" | "*";
+  }
+
+  // detect ordered list marker style
+  const orderedMatch = content.match(/^[ \t]*\d+([.)]) /m);
+  if (orderedMatch) {
+    style.bulletOrdered = orderedMatch[1] as "." | ")";
+  }
+
+  // detect emphasis style
+  const emphasisMatch = content.match(/([*_])\w+\1/);
+  if (emphasisMatch) {
+    style.emphasis = emphasisMatch[1] as "_" | "*";
+  }
+
+  // detect strong style
+  const strongMatch = content.match(/([*_]{2})\w+\1/);
+  if (strongMatch) {
+    style.strong = strongMatch[1] as "_" | "*";
+  }
+
+  // detect code fence style
+  const fenceMatch = content.match(/^([`~]{3,})/m);
+  if (fenceMatch) {
+    style.fence = fenceMatch[1]![0] as "`" | "~";
+  }
+
+  // detect list item indentation
+  const listIndentMatch = content.match(/^( {1,4}|\t)[*+-]/m);
+  if (listIndentMatch) {
+    style.listItemIndent = listIndentMatch[1]!.length === 2
+      ? "one"
+      : listIndentMatch[1] === "\t" ? "tab" : "mixed";
+  }
+
+  // detect rule style
+  const ruleMatch = content.match(/^([*\-_]{3,})/m);
+  if (ruleMatch) {
+    style.rule = ruleMatch[1]![0] as "*" | "-" | "_";
+  }
+
+  return style;
 }

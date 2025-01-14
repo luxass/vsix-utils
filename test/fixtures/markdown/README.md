@@ -41,6 +41,7 @@ Here's our project logo:
 ![Project Logo](./assets/images/logo.png)
 
 Some examples using HTML img tags:
+
 <img src="./assets/images/screenshot1.png" alt="Screenshot 1" width="600">
 <img src="/assets/images/banner.jpg" alt="Banner" width="800">
 <img src="https://example.com/images/team.jpg" alt="Team Photo">
@@ -51,6 +52,7 @@ Project demo video:
 ![Demo Video](./assets/videos/demo.mp4)
 
 Using HTML video tags:
+
 <video width="720" height="480" controls>
   <source src="./assets/videos/tutorial.mp4" type="video/mp4">
   <source src="/assets/videos/tutorial.webm" type="video/webm">
@@ -87,6 +89,6 @@ For more information, check out these resources:
 
 ---
 
-*Last updated: 2025-01-14*
+_Last updated: 2025-01-14_
 
 [Return to top](#project-documentation)

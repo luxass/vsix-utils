@@ -44,6 +44,7 @@ Here's our project logo:
 ![Project Logo](https://github.com/luxass/vsix-utils/raw/HEAD/assets/images/logo.png)
 
 Some examples using HTML img tags:
+
 <img src="https://github.com/luxass/vsix-utils/raw/HEAD/assets/images/screenshot1.png" alt="Screenshot 1" width="600">
 <img src="https://github.com/luxass/vsix-utils/raw/HEAD/assets/images/banner.jpg" alt="Banner" width="800">
 <img src="https://example.com/images/team.jpg" alt="Team Photo">
@@ -54,9 +55,10 @@ Project demo video:
 ![Demo Video](https://github.com/luxass/vsix-utils/raw/HEAD/assets/videos/demo.mp4)
 
 Using HTML video tags:
+
 <video width="720" height="480" controls>
-  <source src="./assets/videos/tutorial.mp4" type="video/mp4">
-  <source src="/assets/videos/tutorial.webm" type="video/webm">
+  <source src="https://github.com/luxass/vsix-utils/blob/HEAD/assets/videos/tutorial.mp4" type="video/mp4">
+  <source src="https://github.com/luxass/vsix-utils/blob/HEAD/assets/videos/tutorial.webm" type="video/webm">
   Your browser does not support the video tag.
 </video>
 
@@ -140,6 +142,7 @@ Here's our project logo:
 ![Project Logo](https://github.com/luxass/luxass.dev/assets/images/logo.png)
 
 Some examples using HTML img tags:
+
 <img src="https://github.com/luxass/luxass.dev/assets/images/screenshot1.png" alt="Screenshot 1" width="600">
 <img src="https://github.com/luxass/luxass.dev/assets/images/banner.jpg" alt="Banner" width="800">
 <img src="https://example.com/images/team.jpg" alt="Team Photo">
@@ -150,9 +153,10 @@ Project demo video:
 ![Demo Video](https://github.com/luxass/luxass.dev/assets/videos/demo.mp4)
 
 Using HTML video tags:
+
 <video width="720" height="480" controls>
-  <source src="./assets/videos/tutorial.mp4" type="video/mp4">
-  <source src="/assets/videos/tutorial.webm" type="video/webm">
+  <source src="https://github.com/luxass/luxass.dev/assets/videos/tutorial.mp4" type="video/mp4">
+  <source src="https://github.com/luxass/luxass.dev/assets/videos/tutorial.webm" type="video/webm">
   Your browser does not support the video tag.
 </video>
 
