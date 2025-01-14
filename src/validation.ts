@@ -218,9 +218,9 @@ export async function validateProjectManifest(
   const hasImplicitLanguageActivationEvents = manifest.contributes?.languages;
   const hasOtherImplicitActivationEvents
     = manifest.contributes?.commands
-    || manifest.contributes?.authentication
-    || manifest.contributes?.customEditors
-    || manifest.contributes?.views;
+      || manifest.contributes?.authentication
+      || manifest.contributes?.customEditors
+      || manifest.contributes?.views;
   const hasImplicitActivationEvents
     = hasImplicitLanguageActivationEvents || hasOtherImplicitActivationEvents;
 
