@@ -168,11 +168,14 @@ export interface DetectedMarkdownSyntax {
  * - `rule`: The horizontal rule style ("*", "-", or "_")
  *
  * @example
- * ```md
- * - List item
- * - Another item
- * ```
+ * ```ts
+ * const markdown = `
+ *  - List item
+ *  - Another item
+ * `;
+ *
  * detectMarkdownSyntax(content) // Returns { bullet: "-", listItemIndent: "one" }
+ * ```
  */
 export function detectMarkdownSyntax(content: string): DetectedMarkdownSyntax {
   const result: DetectedMarkdownSyntax = {};
