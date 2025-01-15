@@ -155,70 +155,90 @@ export interface DetectedMarkdownSyntax {
 }
 
 /**
- * Detects and extracts markdown syntax preferences from a given content string.
+ * Analyzes markdown content and detects the syntax patterns used.
  *
- * @param {string} content - The markdown content to analyze
- * @returns {DetectedMarkdownSyntax} An object containing detected markdown syntax preferences:
- * - `bullet`: The unordered list bullet style (`-`, `+`, or `*`)
- * - `bulletOrdered`: The ordered list marker style (`.` or `)`)
- * - `emphasis`: The emphasis marker style (`_` or `*`)
- * - `strong`: The strong emphasis style (`_` or `*`)
- * - `fence`: The code fence style (``` ` ``` or `~`)
- * - `listItemIndent`: The list item indentation style (`"one"`, `"tab"`, or `"mixed"`)
- * - `rule`: The rule style (`*`, `-`, or `_`)
+ * @param {string} content - The markdown string to analyze
+ * @returns {DetectedMarkdownSyntax} An object containing detected markdown syntax preferences with the following properties:
+ * - `bullet`: The bullet style used for unordered lists ("-", "*", or "+")
+ * - `bulletOrdered`: The marker style used for ordered lists ("." or ")")
+ * - `emphasis`: The emphasis marker style ("*" or "_")
+ * - `strong`: The strong emphasis marker style ("*" or "_")
+ * - `fence`: The code fence style ("`" or "~")
+ * - `listItemIndent`: The indentation style for list items ("tab", "one", "mixed")
+ * - `rule`: The horizontal rule style ("*", "-", or "_")
  *
  * @example
- * ```ts
- * const syntax = detectMarkdownSyntax("* List item\n**bold text**");
- * // Returns: { bullet: "*", strong: "**" }
+ * ```md
+ * - List item
+ * - Another item
  * ```
+ * detectMarkdownSyntax(content) // Returns { bullet: "-", listItemIndent: "one" }
  */
 export function detectMarkdownSyntax(content: string): DetectedMarkdownSyntax {
-  const style: DetectedMarkdownSyntax = {};
+  const result: DetectedMarkdownSyntax = {};
 
-  // detect unordered list bullet style
-  const bulletMatch = content.match(/^[ \t]*([*+-])\s/m);
-  if (bulletMatch) {
-    style.bullet = bulletMatch[1] as "-" | "+" | "*";
+  const hyphenBullets = content.match(/^[\t ]*-[\t ][^\n]+/gm);
+  const asteriskBullets = content.match(/^[\t ]*\*[\t ][^\n]+/gm);
+  const plusBullets = content.match(/^[\t ]*\+[\t ][^\n]+/gm);
+
+  if (hyphenBullets?.length) result.bullet = "-";
+  else if (asteriskBullets?.length) result.bullet = "*";
+  else if (plusBullets?.length) result.bullet = "+";
+
+  // Ordered list marker detection
+  const dotOrdered = content.match(/^\s*\d+\.[\t ][^\n]+/gm);
+  const parenthesisOrdered = content.match(/^\s*\d+\)[\t ][^\n]+/gm);
+
+  if (dotOrdered?.length) result.bulletOrdered = ".";
+  else if (parenthesisOrdered?.length) result.bulletOrdered = ")";
+
+  // Emphasis style detection
+  const asteriskEmphasis = content.match(/(?<!\*)\*[^*\n]+\*(?!\*)/g);
+  const underscoreEmphasis = content.match(/(?<!_)_[^_\n]+_(?!_)/g);
+
+  if (asteriskEmphasis?.length) result.emphasis = "*";
+  else if (underscoreEmphasis?.length) result.emphasis = "_";
+
+  // Strong emphasis detection
+  const asteriskStrong = content.match(/\*\*[^*\n]+\*\*/g);
+  const underscoreStrong = content.match(/__[^_\n]+__/g);
+
+  if (asteriskStrong?.length) result.strong = "*";
+  else if (underscoreStrong?.length) result.strong = "_";
+
+  // Code fence detection
+  const backtickFence = content.match(/^```[^`]*```/gm);
+  const tildeFence = content.match(/^~~~[^~]*~~~/gm);
+
+  if (backtickFence?.length) result.fence = "`";
+  else if (tildeFence?.length) result.fence = "~";
+
+  // List item indentation detection
+  const listItems = content.match(/^[\t ]*([-+*]|\d+[.)])\s+[^\n]+/gm);
+  if (listItems?.length) {
+    const indentTypes = new Set(
+      listItems.map((item) => {
+        const leadingSpace = item.match(/^[\t ]*/)?.[0] || "";
+        if (leadingSpace.includes("\t")) return "tab";
+        return leadingSpace.length === 1 ? "one" : leadingSpace.length > 1 ? "mixed" : "one";
+      }),
+    );
+
+    if (indentTypes.size === 1) {
+      result.listItemIndent = indentTypes.values().next().value;
+    } else {
+      result.listItemIndent = "mixed";
+    }
   }
 
-  // detect ordered list marker style
-  const orderedMatch = content.match(/^[ \t]*\d+([.)]) /m);
-  if (orderedMatch) {
-    style.bulletOrdered = orderedMatch[1] as "." | ")";
-  }
+  // Horizontal rule detection
+  const asteriskRule = content.match(/^[\t ]*(\*[\t ]*){3,}$/m);
+  const hyphenRule = content.match(/^[\t ]*(-[\t ]*){3,}$/m);
+  const underscoreRule = content.match(/^[\t ]*(_[\t ]*){3,}$/m);
 
-  // detect emphasis style
-  const emphasisMatch = content.match(/([*_])\w+\1/);
-  if (emphasisMatch) {
-    style.emphasis = emphasisMatch[1] as "_" | "*";
-  }
+  if (asteriskRule?.length) result.rule = "*";
+  else if (hyphenRule?.length) result.rule = "-";
+  else if (underscoreRule?.length) result.rule = "_";
 
-  // detect strong style
-  const strongMatch = content.match(/([*_]{2})\w+\1/);
-  if (strongMatch) {
-    style.strong = strongMatch[1] as "_" | "*";
-  }
-
-  // detect code fence style
-  const fenceMatch = content.match(/^([`~]{3,})/m);
-  if (fenceMatch) {
-    style.fence = fenceMatch[1]![0] as "`" | "~";
-  }
-
-  // detect list item indentation
-  const listIndentMatch = content.match(/^( {1,4}|\t)[*+-]/m);
-  if (listIndentMatch) {
-    style.listItemIndent = listIndentMatch[1]!.length === 2
-      ? "one"
-      : listIndentMatch[1] === "\t" ? "tab" : "mixed";
-  }
-
-  // detect rule style
-  const ruleMatch = content.match(/^([*\-_]{3,})/m);
-  if (ruleMatch) {
-    style.rule = ruleMatch[1]![0] as "*" | "-" | "_";
-  }
-
-  return style;
+  return result;
 }

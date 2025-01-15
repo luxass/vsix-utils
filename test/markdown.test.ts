@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import { inferBaseUrls, transformMarkdown } from "../src/markdown";
+import { detectMarkdownSyntax, inferBaseUrls, transformMarkdown } from "../src/markdown";
 import { createManifest } from "./utils";
 
 describe("transformMarkdown", () => {
@@ -117,5 +117,63 @@ describe("inferBaseUrls", () => {
     const urls = inferBaseUrls(manifest, "HEAD");
 
     expect(urls).toBeNull();
+  });
+});
+
+describe("detectMarkdownSyntax", () => {
+  it("should detect unordered list bullet style", () => {
+    expect(detectMarkdownSyntax("* List item")).toEqual({ bullet: "*", listItemIndent: "one" });
+    expect(detectMarkdownSyntax("- List item")).toEqual({ bullet: "-", listItemIndent: "one" });
+    expect(detectMarkdownSyntax("+ List item")).toEqual({ bullet: "+", listItemIndent: "one" });
+  });
+
+  it("should detect ordered list marker style", () => {
+    expect(detectMarkdownSyntax("1. First item")).toEqual({ bulletOrdered: ".", listItemIndent: "one" });
+    expect(detectMarkdownSyntax("1) First item")).toEqual({ bulletOrdered: ")", listItemIndent: "one" });
+  });
+
+  it("should detect emphasis style", () => {
+    expect(detectMarkdownSyntax("*italic*")).toEqual({ emphasis: "*" });
+    expect(detectMarkdownSyntax("_italic_")).toEqual({ emphasis: "_" });
+  });
+
+  it("should detect strong emphasis style", () => {
+    expect(detectMarkdownSyntax("**bold**")).toEqual({ strong: "*" });
+    expect(detectMarkdownSyntax("__bold__")).toEqual({ strong: "_" });
+  });
+
+  it("should detect code fence style", () => {
+    expect(detectMarkdownSyntax("```code```")).toEqual({ fence: "`" });
+    expect(detectMarkdownSyntax("~~~code~~~")).toEqual({ fence: "~" });
+  });
+
+  it("should detect list item indentation", () => {
+    expect(detectMarkdownSyntax("  * List")).toEqual({ bullet: "*", listItemIndent: "mixed" });
+    expect(detectMarkdownSyntax("\t* List")).toEqual({ bullet: "*", listItemIndent: "tab" });
+    expect(detectMarkdownSyntax("   * List")).toEqual({ bullet: "*", listItemIndent: "mixed" });
+  });
+
+  it("should detect horizontal rule style", () => {
+    expect(detectMarkdownSyntax("***")).toEqual({ rule: "*" });
+    expect(detectMarkdownSyntax("---")).toEqual({ rule: "-" });
+    expect(detectMarkdownSyntax("___")).toEqual({ rule: "_" });
+  });
+
+  it("should detect multiple syntax elements", () => {
+    const content = `
+* List item
+**bold text**
+---
+`;
+    expect(detectMarkdownSyntax(content)).toEqual({
+      bullet: "*",
+      strong: "*",
+      rule: "-",
+      listItemIndent: "one",
+    });
+  });
+
+  it("should return empty object for no matches", () => {
+    expect(detectMarkdownSyntax("Plain text")).toEqual({});
   });
 });
