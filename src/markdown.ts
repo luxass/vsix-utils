@@ -2,7 +2,7 @@ import type { Manifest } from "./types";
 import { remark } from "remark";
 import remarkTransformLinks from "remark-transform-links";
 
-export interface MarkdownOptions {
+export interface TransformMarkdownOptions {
   /**
    * The markdown content to transform.
    */
@@ -31,7 +31,7 @@ export interface MarkdownOptions {
   branch?: string;
 }
 
-export async function transformMarkdown(manifest: Manifest, options: MarkdownOptions): Promise<string> {
+export async function transformMarkdown(manifest: Manifest, options: TransformMarkdownOptions): Promise<string> {
   const {
     content,
     rewrite = true,

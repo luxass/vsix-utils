@@ -16,6 +16,7 @@ import ignore from "ignore";
 import mime from "mime";
 import { detect } from "package-manager-detector";
 import { glob } from "tinyglobby";
+import { transformMarkdown, type TransformMarkdownOptions } from "./markdown";
 import { VSCE_DEFAULT_IGNORE } from "./vsce-constants";
 
 export interface VsixLocalFile {
@@ -277,6 +278,12 @@ export interface TransformFilesOptions {
    * README file path
    */
   readme?: string;
+
+  /**
+   * Options to provide to `transformMarkdown`.
+   * If nothing is provided, will use default options.
+   */
+  markdown?: Omit<TransformMarkdownOptions, "content">;
 }
 
 /**
@@ -345,6 +352,26 @@ export async function transformFiles(options: TransformFilesOptions): Promise<Tr
   }
 
   if (hasReadmeFile.found) {
+    const entryIndex = files.findIndex((f) => f.path === hasReadmeFile.path);
+
+    if (entryIndex === -1) {
+      throw new Error("could not find readme file");
+    }
+
+    const entry = files[entryIndex!]!;
+
+    let contents = entry.type === "in-memory" ? entry.contents : await readFile(entry.localPath, "utf-8");
+
+    if (typeof contents !== "string") {
+      contents = String(contents);
+    }
+
+    files[entryIndex!] = {
+      type: "in-memory",
+      contents: await transformMarkdown(manifest, { content: contents, ...options.markdown }),
+      path: hasReadmeFile.path!,
+    };
+
     assets.push({
       type: "Microsoft.VisualStudio.Services.Content.Details",
       path: hasReadmeFile.path!,
