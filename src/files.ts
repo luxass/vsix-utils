@@ -10,7 +10,7 @@ import type { ManifestAsset } from "./manifest";
 import type { Manifest, PackageManager } from "./types";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import path, { extname, isAbsolute, join, resolve } from "node:path";
+import path, { extname } from "node:path";
 import process from "node:process";
 import ignore from "ignore";
 import mime from "mime";

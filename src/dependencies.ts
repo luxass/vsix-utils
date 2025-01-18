@@ -1,18 +1,8 @@
-import type { Buffer } from "node:buffer";
-
-import type { ManifestAsset } from "./manifest";
 import type { Manifest, PackageManager } from "./types";
 import { exec } from "node:child_process";
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import path, { extname, isAbsolute, join, resolve } from "node:path";
+import path, { isAbsolute, join, resolve } from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
-import ignore from "ignore";
-import mime from "mime";
-import { detect } from "package-manager-detector";
-import { glob } from "tinyglobby";
-import { VSCE_DEFAULT_IGNORE } from "./vsce-constants";
 
 const execAsync = promisify(exec);
 
