@@ -305,6 +305,12 @@ describe("collect files", () => {
     assert(files.length > 0, "files should not be empty");
     assert(files.length === 6, "files should have 6 items");
 
+    // eslint-disable-next-line no-console
+    console.log({
+      dir,
+      files,
+    });
+
     expect(files).toEqual(expect.arrayContaining([
       {
         type: "local",
