@@ -59,23 +59,20 @@ interface YarnDependency {
 /**
  * Retrieves all production dependencies for an extension based on the package manager being used.
  *
- * @param {Manifest} manifest - The extension's manifest object containing dependency information
- * @param {ExtensionDependenciesOptions} options - Configuration options for retrieving dependencies
- *
- * @returns {Promise<ExtensionDependenciesResult} Promise resolving to an object containing:
- * - dependencies: Array of extension dependencies with name, version and path
- * - packageManager: The package manager that was used
- *
- * @throws Error if:
- * - Package manager cannot be detected when using 'auto'
- * - Unsupported package manager is detected/specified (e.g. deno, bun)
- * - Unable to parse dependency information from package manager output
+ * @param manifest - The extension's manifest object containing dependency information
+ * @param options - Configuration options for retrieving dependencies
+ * @returns An array of extension dependencies with name, version, and path
  *
  * @remarks
- * Supports npm, yarn, and pnpm package managers.
- * When using npm, parses output of `npm list`
- * When using yarn, parses output of `yarn list`
- * When using pnpm, parses output of `pnpm list`
+ * Supports npm, yarn, and pnpm package managers with the following behaviors:
+ * - npm: Parses output of `npm list --production`
+ * - yarn: Parses output of `yarn list --prod --json`
+ * - pnpm: Parses output of `pnpm list --production --json`
+ *
+ * @throws {Error} If:
+ * - Package manager cannot be detected
+ * - Unsupported package manager is specified
+ * - Unable to parse dependency information from package manager output
  */
 export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependency[]> {
   const {
@@ -121,7 +118,20 @@ export async function getExtensionDependencies(manifest: Manifest, options: Exte
       return [];
     }
 
-    const prune = true; // TODO: using packaged dependencies
+    const prune = true; /**
+     * Converts a Yarn tree node into a structured YarnDependency object.
+     *
+     * @remarks
+     * This function recursively processes Yarn dependency tree nodes, extracting dependency information
+     * and handling scoped and unscoped package names.
+     *
+     * @param prefix - Base path prefix for constructing the dependency path
+     * @param tree - The Yarn tree node to convert
+     * @param prune - Flag to determine whether to filter out dependencies with version ranges
+     * @returns A YarnDependency object or null if pruning conditions are met
+     *
+     * @internal
+     */
 
     function asYarnDependency(prefix: string, tree: YarnTreeNode, prune: boolean): YarnDependency | null {
       if (prune && /@[\^~]/.test(tree.name)) {

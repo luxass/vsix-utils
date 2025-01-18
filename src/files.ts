@@ -137,12 +137,14 @@ export async function collect(manifest: Manifest, options: CollectOptions): Prom
 }
 
 /**
- * Detects and returns the package manager being used in the specified directory.
- *
- * @param {string} cwd - The current working directory path to detect the package manager from
- * @returns {Promise<PackageManager | null>} Promise that resolves with the detected package manager name
- * @throws {Error} If no package manager could be detected
- * @throws {Error} If an unsupported package manager (deno/bun) is detected
+ * Detects the package manager used in a specific directory.
+ * 
+ * @param cwd - The current working directory to analyze for package manager detection
+ * @returns The name of the detected package manager
+ * @throws An error if no package manager is detected or if an unsupported package manager is found
+ * 
+ * @remarks
+ * This function supports npm, yarn, and pnpm package managers. It will throw an error for deno and bun.
  */
 export async function getExtensionPackageManager(cwd: string): Promise<PackageManager | null> {
   const result = await detect({ cwd });
@@ -189,25 +191,22 @@ export interface ContentTypeResult {
 }
 
 /**
- * Generates content types mapping and XML representation for VSIX files
- * @param {VsixFile[]} files - Array of VSIX files to process
- * @returns {ContentTypeResult} Object containing:
- *  - xml: XML string representation of content types
- *  - contentTypes: Record mapping file extensions to their content types
- * @throws {Error} When content type cannot be determined for a file
- * @example
- * ```ts
- * import { getContentTypesForFiles } from "vsix-utils/files";
+ * Generates content types mapping and XML representation for VSIX files.
  *
+ * @param files - Array of VSIX files to process
+ * @returns Object containing XML string representation of content types and mapping of file extensions to content types
+ * @throws Error when content type cannot be determined for a file
+ *
+ * @remarks
+ * This function determines the MIME content type for each file extension in the provided files.
+ * It uses a default set of MIME types and falls back to mime type detection when necessary.
+ *
+ * @example
  * const files = [
  *   { type: "local", path: "extension/package.json", localPath: "/path/to/extension/package.json" },
- *   { type: "local", path: "extension/README.md", localPath: "/path/to/extension/README.md" },
- *   { type: "local", path: "extension/LICENSE", localPath: "/path/to/extension/LICENSE" },
- *   { type: "local", path: "extension/dist/extension.js", localPath: "/path/to/extension/dist/extension.js" },
+ *   { type: "local", path: "extension/README.md", localPath: "/path/to/extension/README.md" }
  * ];
- *
  * const { xml, contentTypes } = getContentTypesForFiles(files);
- * ```
  */
 export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
   const contentTypes: Record<string, string> = {};
@@ -279,6 +278,22 @@ export interface TransformFilesOptions {
   readme?: string;
 }
 
+/**
+ * Transforms files for a VSIX package by identifying and categorizing specific asset files.
+ *
+ * @remarks
+ * This function processes a collection of files to determine which assets should be included in the VSIX manifest.
+ * It looks for specific files like license, icon, README, changelog, and translation files.
+ *
+ * @param options - Configuration options for file transformation
+ * @param options.manifest - The extension manifest
+ * @param options.files - Array of files to process
+ * @param options.readme - Optional README file path
+ *
+ * @returns A promise resolving to transformed files metadata
+ *
+ * @throws {Error} If a license file is found but cannot be located in the files array
+ */
 export async function transformFiles(options: TransformFilesOptions): Promise<TransformedFiles> {
   const { manifest, files, readme } = options;
 
