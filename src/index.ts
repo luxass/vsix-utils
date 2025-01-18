@@ -4,26 +4,27 @@
  * This module contains utility functions for handling files.
  */
 
+export type { ExtensionDependenciesOptions, ExtensionDependency } from "./dependencies";
+export { getExtensionDependencies } from "./dependencies";
+
 export type {
   CollectOptions,
   ContentTypeResult,
-  ExtensionDependenciesOptions,
-  ExtensionDependency,
-  ProcessedFiles,
+  TransformedFiles,
+  TransformFilesOptions,
   VsixFile,
   VsixInMemoryFile,
   VsixLocalFile,
 } from "./files";
+
 export {
   collect,
   getContentTypesForFiles,
-  getExtensionDependencies,
   getExtensionPackageManager,
   isInMemoryFile,
   isLocalFile,
-  processFiles,
+  transformFiles,
 } from "./files";
-
 export type {
   ManifestAsset,
   ManifestAssetType,
@@ -38,7 +39,7 @@ export {
   readProjectManifest,
   transformExtensionKind,
 } from "./manifest";
-export { inferBaseUrls, type InferredBaseUrls, type MarkdownOptions, transformMarkdown } from "./markdown";
+export { inferBaseUrls, type InferredBaseUrls, transformMarkdown, type TransformMarkdownOptions } from "./markdown";
 export { prepublish, type PrepublishOptions } from "./scripts";
 export type {
   Manifest,

@@ -2,7 +2,8 @@ import { exec } from "node:child_process";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { fromFileSystem, testdir } from "vitest-testdirs";
-import { getExtensionDependencies, getExtensionPackageManager } from "../src/files";
+import { getExtensionDependencies } from "../src/dependencies";
+import { getExtensionPackageManager } from "../src/files";
 import { readProjectManifest } from "../src/manifest";
 import { hasPM, transformAbsolutePathToVitestTestdirPath } from "./utils";
 

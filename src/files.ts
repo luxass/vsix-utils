@@ -5,21 +5,19 @@
  */
 
 import type { Buffer } from "node:buffer";
+import type { ExtensionDependency } from "./dependencies";
 import type { ManifestAsset } from "./manifest";
 import type { Manifest, PackageManager } from "./types";
-import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import path, { extname, isAbsolute, join, resolve } from "node:path";
+import path, { extname } from "node:path";
 import process from "node:process";
-import { promisify } from "node:util";
 import ignore from "ignore";
 import mime from "mime";
 import { detect } from "package-manager-detector";
 import { glob } from "tinyglobby";
+import { transformMarkdown, type TransformMarkdownOptions } from "./markdown";
 import { VSCE_DEFAULT_IGNORE } from "./vsce-constants";
-
-const execAsync = promisify(exec);
 
 export interface VsixLocalFile {
   type: "local";
@@ -161,237 +159,6 @@ export async function getExtensionPackageManager(cwd: string): Promise<PackageMa
   return result.name;
 }
 
-export interface ExtensionDependenciesOptions {
-  /**
-   * The package manager to use.
-   */
-  packageManager: PackageManager;
-
-  /**
-   * The current working directory
-   * @default process.cwd()
-   */
-  cwd: string;
-}
-
-export interface ExtensionDependency {
-  /**
-   * The name of the dependency.
-   */
-  name: string;
-
-  /**
-   * The version of the dependency.
-   */
-  version?: string;
-
-  /**
-   * The path to the dependency.
-   */
-  path: string;
-}
-
-interface PnpmDependency {
-  from: string;
-  version: string;
-  resolved: string;
-  path: string;
-  dependencies: Record<string, PnpmDependency>;
-}
-
-interface YarnTreeNode {
-  name: string;
-  children: YarnTreeNode[];
-}
-
-interface YarnDependency {
-  name: string;
-  path: string;
-  version: string;
-  children: YarnDependency[];
-}
-
-/**
- * Retrieves all production dependencies for an extension based on the package manager being used.
- *
- * @param {Manifest} manifest - The extension's manifest object containing dependency information
- * @param {ExtensionDependenciesOptions} options - Configuration options for retrieving dependencies
- *
- * @returns {Promise<ExtensionDependenciesResult} Promise resolving to an object containing:
- * - dependencies: Array of extension dependencies with name, version and path
- * - packageManager: The package manager that was used
- *
- * @throws Error if:
- * - Package manager cannot be detected when using 'auto'
- * - Unsupported package manager is detected/specified (e.g. deno, bun)
- * - Unable to parse dependency information from package manager output
- *
- * @remarks
- * Supports npm, yarn, and pnpm package managers.
- * When using npm, parses output of `npm list`
- * When using yarn, parses output of `yarn list`
- * When using pnpm, parses output of `pnpm list`
- */
-export async function getExtensionDependencies(manifest: Manifest, options: ExtensionDependenciesOptions): Promise<ExtensionDependency[]> {
-  const {
-    packageManager,
-    cwd = process.cwd(),
-  } = options;
-
-  const dependencies = new Set<ExtensionDependency>();
-
-  if (packageManager === "npm") {
-    const { stdout } = await execAsync("npm list --production --parseable --depth=99999 --loglevel=error", { cwd });
-    const lines = stdout.split(/[\r\n]/).filter((path) => isAbsolute(path));
-
-    for (const line of lines) {
-      if (line === resolve(cwd)) {
-        continue;
-      }
-
-      const dependency = line.split(`${path.sep}node_modules${path.sep}`)[1];
-
-      if (dependency == null) {
-        throw new Error(`could not parse dependency: ${line}`);
-      }
-
-      dependencies.add({
-        name: dependency.replace(/\\/g, "/"),
-        version: manifest.dependencies != null ? manifest.dependencies[dependency.replace(/\\/g, "/")] : undefined,
-        path: line,
-      });
-    }
-  } else if (packageManager === "yarn") {
-    const { stdout } = await execAsync("yarn list --prod --json", { cwd });
-
-    const match = /^\{"type":"tree".*$/m.exec(stdout);
-
-    if (!match || match.length !== 1) {
-      throw new Error("Could not parse result of `yarn list --json`");
-    }
-
-    const trees = JSON.parse(match[0]).data.trees as YarnTreeNode[];
-
-    if (!Array.isArray(trees) || trees.length === 0) {
-      return [];
-    }
-
-    const prune = true; // TODO: using packaged dependencies
-
-    function asYarnDependency(prefix: string, tree: YarnTreeNode, prune: boolean): YarnDependency | null {
-      if (prune && /@[\^~]/.test(tree.name)) {
-        return null;
-      }
-
-      let name: string;
-      let version: string = "";
-      try {
-        const tmp = tree.name.split("@");
-
-        if (tmp[0] === "") {
-          tmp.shift();
-          tmp[0] = `@${tmp[0]}`;
-        }
-
-        name = tmp[0]!;
-        version = tmp[1] || "";
-      } catch {
-        name = tree.name.replace(/^([^@+])@.*$/, "$1");
-      }
-
-      const dependencyPath = path.join(prefix, name);
-      const children: YarnDependency[] = [];
-
-      for (const child of tree.children || []) {
-        const dep = asYarnDependency(path.join(prefix, name, "node_modules"), child, prune);
-
-        if (dep) {
-          children.push(dep);
-        }
-      }
-
-      return { name, path: dependencyPath, children, version };
-    }
-
-    const result = trees.map((tree) => asYarnDependency(join(cwd, "node_modules"), tree, prune)).filter((dep) => dep != null);
-
-    const internalDeps = new Set<string>();
-
-    const flatten = (dep: YarnDependency) => {
-      if (internalDeps.has(dep.path)) {
-        return;
-      }
-
-      dependencies.add({
-        name: dep.name,
-        version: dep.version,
-        path: dep.path,
-      });
-      internalDeps.add(dep.path);
-
-      if (dep.children) {
-        for (const child of dep.children) {
-          flatten(child);
-        }
-      }
-    };
-
-    for (const dep of result) {
-      flatten(dep);
-    }
-  } else if (packageManager === "pnpm") {
-    // use --ignore-workspace to avoid always including the workspace packages
-    const { stdout } = await execAsync("pnpm list --production --json --depth=99999 --loglevel=error --ignore-workspace", { cwd });
-    let entryList = [];
-    try {
-      entryList = JSON.parse(stdout);
-    } catch {
-      return [];
-    }
-
-    if (!Array.isArray(entryList) || entryList.length === 0) {
-      return [];
-    }
-
-    const entry = entryList[0] as {
-      dependencies?: Record<string, PnpmDependency>;
-    };
-
-    if (entry == null || typeof entry !== "object" || entry.dependencies == null || typeof entry.dependencies !== "object") {
-      return [];
-    }
-
-    const internalDeps = new Set<string>();
-
-    const flatten = (dep: PnpmDependency) => {
-      if (internalDeps.has(dep.path)) {
-        return;
-      }
-
-      dependencies.add({
-        name: dep.from,
-        version: dep.version,
-        path: dep.path,
-      });
-      internalDeps.add(dep.path);
-
-      if (dep.dependencies) {
-        for (const child of Object.values(dep.dependencies)) {
-          flatten(child);
-        }
-      }
-    };
-
-    for (const value of Object.values(entry.dependencies)) {
-      flatten(value);
-    }
-  } else {
-    throw new Error(`unsupported package manager: ${packageManager}`);
-  }
-
-  return Array.from(dependencies);
-}
-
 // taken from https://github.com/microsoft/vscode-vsce/blob/06951d9f03b90947df6d5ad7d9113f529321df20/src/package.ts#L1581-L1584
 // added more default mime types to speed up the process
 const DEFAULT_MIME_TYPES = new Map<string, string>([
@@ -476,7 +243,7 @@ export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
   };
 }
 
-export interface ProcessedFiles {
+export interface TransformedFiles {
   /**
    * The assets to include in the manifest.
    *
@@ -496,7 +263,7 @@ export interface ProcessedFiles {
   license?: string;
 }
 
-export interface ProcessFileOptions {
+export interface TransformFilesOptions {
   /**
    * The manifest object containing package details.
    */
@@ -511,9 +278,31 @@ export interface ProcessFileOptions {
    * README file path
    */
   readme?: string;
+
+  /**
+   * Options to provide to `transformMarkdown`.
+   * If nothing is provided, will use default options.
+   */
+  markdown?: Omit<TransformMarkdownOptions, "content">;
 }
 
-export async function processFiles(options: ProcessFileOptions): Promise<ProcessedFiles> {
+/**
+ * Transforms files for a VSIX package by identifying and categorizing specific asset files.
+ *
+ * @remarks
+ * This function processes a collection of files to determine which assets should be included in the VSIX manifest.
+ * It looks for specific files like license, icon, README, changelog, and translation files.
+ *
+ * @param {TransformFilesOptions} options - Configuration options for file transformation
+ * @param {Manifest} options.manifest - The extension manifest
+ * @param {VsixFile[]} options.files - Array of files to process
+ * @param {string?} options.readme - Optional README file path
+ *
+ * @returns {Promise<TransformedFiles>} A promise resolving to transformed files metadata
+ *
+ * @throws {Error} If a license file is found but cannot be located in the files array
+ */
+export async function transformFiles(options: TransformFilesOptions): Promise<TransformedFiles> {
   const { manifest, files, readme } = options;
 
   const assets: ManifestAsset[] = [];
@@ -563,6 +352,26 @@ export async function processFiles(options: ProcessFileOptions): Promise<Process
   }
 
   if (hasReadmeFile.found) {
+    const entryIndex = files.findIndex((f) => f.path === hasReadmeFile.path);
+
+    if (entryIndex === -1) {
+      throw new Error("could not find readme file");
+    }
+
+    const entry = files[entryIndex!]!;
+
+    let contents = entry.type === "in-memory" ? entry.contents : await readFile(entry.localPath, "utf-8");
+
+    if (typeof contents !== "string") {
+      contents = String(contents);
+    }
+
+    files[entryIndex!] = {
+      type: "in-memory",
+      contents: await transformMarkdown(manifest, { content: contents, ...options.markdown }),
+      path: hasReadmeFile.path!,
+    };
+
     assets.push({
       type: "Microsoft.VisualStudio.Services.Content.Details",
       path: hasReadmeFile.path!,
