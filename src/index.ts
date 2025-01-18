@@ -10,7 +10,8 @@ export { getExtensionDependencies } from "./dependencies";
 export type {
   CollectOptions,
   ContentTypeResult,
-  ProcessedFiles,
+  TransformedFiles,
+  TransformFilesOptions,
   VsixFile,
   VsixInMemoryFile,
   VsixLocalFile,
@@ -22,7 +23,7 @@ export {
   getExtensionPackageManager,
   isInMemoryFile,
   isLocalFile,
-  processFiles,
+  transformFiles,
 } from "./files";
 export type {
   ManifestAsset,
