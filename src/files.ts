@@ -131,7 +131,7 @@ export async function collect(manifest: Manifest, options: CollectOptions): Prom
       files.push({
         type: "local",
         path: path.join("extension/node_modules", dep.name),
-        localPath: dep.path.replace(process.cwd() + path.sep, ""),
+        localPath: dep.path,
       });
     }
   }
