@@ -73,8 +73,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2(@types/node@20.17.14)(msw@2.7.0(@types/node@20.17.14)(typescript@5.7.3))(yaml@2.7.0)
       vitest-testdirs:
-        specifier: ^2.1.0-beta.3
-        version: 2.1.0-beta.3(vitest@3.0.2(@types/node@20.17.14)(msw@2.7.0(@types/node@20.17.14)(typescript@5.7.3))(yaml@2.7.0))
+        specifier: ^2.1.0
+        version: 2.1.0(vitest@3.0.2(@types/node@20.17.14)(msw@2.7.0(@types/node@20.17.14)(typescript@5.7.3))(yaml@2.7.0))
 
   test/fixtures/extensions/bundled-extension:
     devDependencies:
@@ -2277,8 +2277,8 @@ packages:
       yaml:
         optional: true
 
-  vitest-testdirs@2.1.0-beta.3:
-    resolution: {integrity: sha512-gT/25Qs++ciwkekBZjqvs67zYc/ZkHWumkwye9Uej9TMR2OPxgD7pLvj+y28jcE9YcTXINLK2swP1sYS6tcmsw==}
+  vitest-testdirs@2.1.0:
+    resolution: {integrity: sha512-qjzzE8Bahv48mjPKfApLxUSk4YvyBRpxOXIHdmxu0EooDfD2HRH5Lfwc0U6FIB+ui0T0eGeC4311ChMt6pHU6A==}
     engines: {node: '>=20'}
     peerDependencies:
       vitest: '>=2.0.5 <4.0.0'
@@ -4694,7 +4694,7 @@ snapshots:
       fsevents: 2.3.3
       yaml: 2.7.0
 
-  vitest-testdirs@2.1.0-beta.3(vitest@3.0.2(@types/node@20.17.14)(msw@2.7.0(@types/node@20.17.14)(typescript@5.7.3))(yaml@2.7.0)):
+  vitest-testdirs@2.1.0(vitest@3.0.2(@types/node@20.17.14)(msw@2.7.0(@types/node@20.17.14)(typescript@5.7.3))(yaml@2.7.0)):
     dependencies:
       testdirs: 0.1.4
       vitest: 3.0.2(@types/node@20.17.14)(msw@2.7.0(@types/node@20.17.14)(typescript@5.7.3))(yaml@2.7.0)
