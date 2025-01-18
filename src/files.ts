@@ -279,6 +279,22 @@ export interface TransformFilesOptions {
   readme?: string;
 }
 
+/**
+ * Transforms files for a VSIX package by identifying and categorizing specific asset files.
+ *
+ * @remarks
+ * This function processes a collection of files to determine which assets should be included in the VSIX manifest.
+ * It looks for specific files like license, icon, README, changelog, and translation files.
+ *
+ * @param {TransformFilesOptions} options - Configuration options for file transformation
+ * @param {Manifest} options.manifest - The extension manifest
+ * @param {VsixFile[]} options.files - Array of files to process
+ * @param {string?} options.readme - Optional README file path
+ *
+ * @returns {Promise<TransformedFiles>} A promise resolving to transformed files metadata
+ *
+ * @throws {Error} If a license file is found but cannot be located in the files array
+ */
 export async function transformFiles(options: TransformFilesOptions): Promise<TransformedFiles> {
   const { manifest, files, readme } = options;
 
