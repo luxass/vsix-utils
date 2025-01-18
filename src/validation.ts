@@ -316,7 +316,7 @@ export async function validateProjectManifest(
       if (
         srcURL
         && !(
-          (srcURL.host != null && VSCE_TRUSTED_SOURCES.includes(srcURL.host.toLowerCase()))
+          (srcURL.host != null && VSCE_TRUSTED_SOURCES.includes(srcURL.host.toLowerCase() as typeof VSCE_TRUSTED_SOURCES[number]))
           || GITHUB_BADGE_URL_REGEX.test(srcURL.href)
         )
       ) {
