@@ -242,7 +242,7 @@ export function getContentTypesForFiles(files: VsixFile[]): ContentTypeResult {
   };
 }
 
-export interface ProcessedFiles {
+export interface TransformedFiles {
   /**
    * The assets to include in the manifest.
    *
@@ -262,7 +262,7 @@ export interface ProcessedFiles {
   license?: string;
 }
 
-export interface ProcessFileOptions {
+export interface TransformFilesOptions {
   /**
    * The manifest object containing package details.
    */
@@ -279,7 +279,7 @@ export interface ProcessFileOptions {
   readme?: string;
 }
 
-export async function processFiles(options: ProcessFileOptions): Promise<ProcessedFiles> {
+export async function transformFiles(options: TransformFilesOptions): Promise<TransformedFiles> {
   const { manifest, files, readme } = options;
 
   const assets: ManifestAsset[] = [];
