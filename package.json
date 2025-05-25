@@ -108,7 +108,7 @@
     "fast-xml-parser": "^4.5.1",
     "ignore": "^7.0.3",
     "mime": "^4.0.6",
-    "package-manager-detector": "^0.2.8",
+    "package-manager-detector": "^1.0.0",
     "remark": "^15.0.1",
     "remark-transform-links": "^0.1.2",
     "semver": "^7.6.3",
@@ -128,6 +128,6 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vitest": "^3.0.2",
-    "vitest-testdirs": "^2.1.0"
+    "vitest-testdirs": "^4.0.0"
   }
 }
