@@ -73,8 +73,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0)
       vitest-testdirs:
-        specifier: ^2.1.0
-        version: 2.1.1(vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0))
+        specifier: ^4.0.0
+        version: 4.0.0(vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0))
 
   test/fixtures/extensions/bundled-extension:
     devDependencies:
@@ -2071,8 +2071,8 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
 
-  testdirs@0.1.4:
-    resolution: {integrity: sha512-6ITYziGX1OmfR2HGJgjFwxnKIWdytUuVZV3JwkCal7m2v9kw+r+CZcwjIzjn5Q8Bxdm60a3L3tLDhUOuEwklsQ==}
+  testdirs@3.0.0:
+    resolution: {integrity: sha512-2G7stHEavnUbvsS9LyGieuVyUVNVXAgeMfqiUtebmA63yJSgC6JBv3eTk3rmmDfrjB8wv1z+45Bn/awEI6e/yw==}
     engines: {node: '>=20'}
 
   thenify-all@1.6.0:
@@ -2283,8 +2283,8 @@ packages:
       yaml:
         optional: true
 
-  vitest-testdirs@2.1.1:
-    resolution: {integrity: sha512-1bVjra7vT07fFasVYmpWYBYvvGBogrvjBOBk3UVhCD4ESwhU+CcLBEnpo21jBDgM1KWvWQsg3HZgerMnnBDcsQ==}
+  vitest-testdirs@4.0.0:
+    resolution: {integrity: sha512-gfX3bh5B3iqPioz0PudaJc/sPT7kuoRKUDK3Dng5k7/4O5usb3jV1/563lxshQUJO56JU1XELQFhHdQbHUqBbg==}
     engines: {node: '>=20'}
     peerDependencies:
       vitest: '>=2.0.5 <4.0.0'
@@ -4507,7 +4507,7 @@ snapshots:
 
   tapable@2.2.1: {}
 
-  testdirs@0.1.4: {}
+  testdirs@3.0.0: {}
 
   thenify-all@1.6.0:
     dependencies:
@@ -4706,9 +4706,9 @@ snapshots:
       fsevents: 2.3.3
       yaml: 2.7.0
 
-  vitest-testdirs@2.1.1(vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0)):
+  vitest-testdirs@4.0.0(vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0)):
     dependencies:
-      testdirs: 0.1.4
+      testdirs: 3.0.0
       vitest: 3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0)
 
   vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0):
