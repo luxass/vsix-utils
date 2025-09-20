@@ -9,50 +9,50 @@ importers:
   .:
     dependencies:
       fast-xml-parser:
-        specifier: ^4.5.1
+        specifier: 4.5.1
         version: 4.5.1
       ignore:
-        specifier: ^7.0.3
+        specifier: 7.0.3
         version: 7.0.3
       mime:
-        specifier: ^4.0.6
+        specifier: 4.0.6
         version: 4.0.6
       package-manager-detector:
-        specifier: ^1.0.0
+        specifier: 1.1.0
         version: 1.1.0
       remark:
         specifier: ^15.0.1
         version: 15.0.1
       remark-transform-links:
-        specifier: ^0.1.2
+        specifier: 0.1.2
         version: 0.1.2(remark@15.0.1)
       semver:
-        specifier: ^7.6.3
+        specifier: 7.7.1
         version: 7.7.1
       tinyglobby:
-        specifier: ^0.2.10
+        specifier: 0.2.12
         version: 0.2.12
       yauzl:
-        specifier: ^3.2.0
+        specifier: 3.2.0
         version: 3.2.0
       yazl:
-        specifier: ^3.3.1
+        specifier: 3.3.1
         version: 3.3.1
     devDependencies:
       '@luxass/eslint-config':
-        specifier: ^4.15.0
+        specifier: 4.15.0
         version: 4.15.0(@typescript-eslint/utils@8.20.0(eslint@9.28.0)(typescript@5.7.3))(@vue/compiler-sfc@3.5.13)(eslint-plugin-format@1.0.1(eslint@9.28.0))(eslint@9.28.0)(typescript@5.7.3)(vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0))
       '@types/node':
-        specifier: ^22.0.0
+        specifier: 22.13.4
         version: 22.13.4
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: 7.5.8
         version: 7.5.8
       '@types/yauzl':
-        specifier: ^2.10.3
+        specifier: 2.10.3
         version: 2.10.3
       '@types/yazl':
-        specifier: ^3.0.0
+        specifier: 3.3.0
         version: 3.3.0
       eslint:
         specifier: ^9.18.0
@@ -61,19 +61,19 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(eslint@9.28.0)
       msw:
-        specifier: ^2.7.0
+        specifier: 2.7.0
         version: 2.7.0(@types/node@22.13.4)(typescript@5.7.3)
       tsup:
-        specifier: ^8.3.5
+        specifier: 8.3.6
         version: 8.3.6(postcss@8.5.4)(typescript@5.7.3)(yaml@2.7.0)
       typescript:
-        specifier: ^5.7.3
+        specifier: 5.7.3
         version: 5.7.3
       vitest:
         specifier: ^3.0.2
         version: 3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0)
       vitest-testdirs:
-        specifier: ^4.0.0
+        specifier: 4.0.0
         version: 4.0.0(vitest@3.0.2(@types/node@22.13.4)(msw@2.7.0(@types/node@22.13.4)(typescript@5.7.3))(yaml@2.7.0))
 
   test/fixtures/extensions/bundled-extension:
@@ -2005,6 +2005,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   spdx-correct@3.2.0:
     resolution: {integrity: sha512-kN9dJbvnySHULIluDHy32WHRUu3Og7B9sbY7tsFLctQkIqnMh3hErYgdMjTYuqmcXX+lK5T1lnUt3G7zNswmZA==}
@@ -2881,11 +2882,11 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 22.13.4
+      '@types/node': 20.17.19
 
   '@types/yazl@3.3.0':
     dependencies:
-      '@types/node': 22.13.4
+      '@types/node': 20.17.19
 
   '@typescript-eslint/eslint-plugin@8.20.0(@typescript-eslint/parser@8.20.0(eslint@9.28.0)(typescript@5.7.3))(eslint@9.28.0)(typescript@5.7.3)':
     dependencies:
