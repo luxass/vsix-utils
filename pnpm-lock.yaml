@@ -55,10 +55,10 @@ importers:
         specifier: 3.3.0
         version: 3.3.0
       eslint:
-        specifier: ^9.18.0
+        specifier: 9.28.0
         version: 9.28.0
       eslint-plugin-format:
-        specifier: ^1.0.1
+        specifier: 1.0.1
         version: 1.0.1(eslint@9.28.0)
       msw:
         specifier: 2.7.0
