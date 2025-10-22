@@ -8,7 +8,7 @@
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.18.3",
   "license": "MIT",
   "homepage": "https://github.com/luxass/vsix-utils",
   "repository": "https://github.com/luxass/vsix-utils",
@@ -105,29 +105,29 @@
     "pretest": "pnpm run build:extensions"
   },
   "dependencies": {
-    "fast-xml-parser": "4.5.1",
-    "ignore": "7.0.3",
-    "mime": "4.0.6",
-    "package-manager-detector": "1.1.0",
+    "fast-xml-parser": "4.5.3",
+    "ignore": "7.0.5",
+    "mime": "4.1.0",
+    "package-manager-detector": "1.4.1",
     "remark": "^15.0.1",
-    "remark-transform-links": "0.1.2",
-    "semver": "7.7.1",
-    "tinyglobby": "0.2.12",
+    "remark-transform-links": "0.2.0",
+    "semver": "7.7.3",
+    "tinyglobby": "0.2.15",
     "yauzl": "3.2.0",
     "yazl": "3.3.1"
   },
   "devDependencies": {
-    "@luxass/eslint-config": "4.15.0",
-    "@types/node": "22.13.4",
-    "@types/semver": "7.5.8",
+    "@luxass/eslint-config": "4.19.0",
+    "@types/node": "22.18.10",
+    "@types/semver": "7.7.1",
     "@types/yauzl": "2.10.3",
     "@types/yazl": "3.3.0",
     "eslint": "^9.18.0",
     "eslint-plugin-format": "^1.0.1",
-    "msw": "2.7.0",
-    "tsup": "8.3.6",
-    "typescript": "5.7.3",
+    "msw": "2.11.5",
+    "tsup": "8.5.0",
+    "typescript": "5.9.3",
     "vitest": "^3.0.2",
-    "vitest-testdirs": "4.0.0"
+    "vitest-testdirs": "4.2.1"
   }
 }
