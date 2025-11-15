@@ -21,7 +21,7 @@ importers:
         specifier: 1.4.1
         version: 1.4.1
       remark:
-        specifier: ^15.0.1
+        specifier: 15.0.1
         version: 15.0.1
       remark-transform-links:
         specifier: 0.2.0
