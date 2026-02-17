@@ -118,7 +118,7 @@
   },
   "devDependencies": {
     "@luxass/eslint-config": "4.19.0",
-    "@types/node": "22.18.10",
+    "@types/node": "24.10.13",
     "@types/semver": "7.7.1",
     "@types/yauzl": "2.10.3",
     "@types/yazl": "3.3.0",
