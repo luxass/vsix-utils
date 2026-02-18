@@ -105,7 +105,7 @@
     "pretest": "pnpm run build:extensions"
   },
   "dependencies": {
-    "fast-xml-parser": "4.5.3",
+    "fast-xml-parser": "5.3.6",
     "ignore": "7.0.5",
     "mime": "4.1.0",
     "package-manager-detector": "1.4.1",
