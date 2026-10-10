@@ -124,7 +124,7 @@
     "@types/yazl": "3.3.0",
     "eslint": "^9.18.0",
     "eslint-plugin-format": "^1.0.1",
-    "msw": "2.11.5",
+    "msw": "3.0.2",
     "tsup": "8.5.0",
     "typescript": "5.9.3",
     "vitest": "^3.0.2",
